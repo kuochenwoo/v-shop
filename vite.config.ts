@@ -60,6 +60,9 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       port: Number(env.VITE_PORT),
       proxy: {
         '/dev-api': {
+          // 把所有的请求重定向到API工厂
+          // http://192.168.10.106:2022/dev-api/shop/goods/category/all <--- 原请求地址
+          // https://api.it120.cc/xiaochengxu/shop/goods/category/all <--- 实际请求地址
           target: `https://${env.VITE_APP_API_HOST}/${env.VITE_APP_SUB_DOMAIN}`, // https://api.it120.cc/xiaochengxu
           changeOrigin: true,
           secure: false,
