@@ -84,7 +84,7 @@ function onGoodClicked(id: number) {
       >
         <div class="list">
           <div v-for="item in list" :key="item.id" class="list-col">
-            <div class="list-item" @click="onGoodClicked(item.id)">
+            <div class="list-item">
               <div v-if="item.recommendStatus" class="list-item-badge">推荐</div>
               <van-image class="list-item-photo" :src="item.pic" :alt="item.name" />
               <div class="list-item-info">
@@ -100,7 +100,7 @@ function onGoodClicked(id: number) {
                       <span class="price-origin-integer">{{ item.originalPrice }}</span>
                     </div>
                   </div>
-                  <van-button type="primary" plain class="buy-btn">购买</van-button>
+                  <van-button type="primary" plain class="buy-btn" @click="onGoodClicked(item.id)">购买</van-button>
                 </div>
               </div>
             </div>

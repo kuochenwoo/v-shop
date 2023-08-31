@@ -16,7 +16,8 @@
             <div class="list-item-inner">
               <div class="list-item-name">{{ item.nickName }}</div>
               <div class="list-item-star">
-                <van-rate v-model="item.rate" :size="14" color="#f44" void-icon="star" void-color="#eee" readonly />
+                <van-rate v-model="item.rate" :size="14" color="#4f4" void-icon="star" void-color="#eee" readonly />
+                <p>{{item}}</p> 
               </div>
             </div>
             <div class="list-item-date">{{ item.date }}</div>

@@ -53,13 +53,13 @@ const goodMaxPrice = computed(() => {
   }
 });
 
-const goodDeliveryTitle = computed(() => {
-  if (unref(basicInfo).logisticsId) {
-    return `运费 ${unref(logistics).isFree ? '包邮' : '不包邮'}`;
-  } else {
-    return `无需配送`;
-  }
-});
+// const goodDeliveryTitle = computed(() => {
+//   if (unref(basicInfo).logisticsId) {
+//     return `运费 ${unref(logistics).isFree ? '包邮' : '不包邮'}`;
+//   } else {
+//     return `无需配送`;
+//   }
+// });
 
 function getGoodsDetail() {
   API_GOODS.goodsDetail({ id: route.query.id }).then((res) => {
@@ -250,13 +250,12 @@ function addCartHandle() {
         </div>
       </div>
     </div>
-    <div class="stock van-hairline--top">
+    <!-- <div class="stock van-hairline--top">
       <div class="stock-item">
         {{ goodDeliveryTitle }}
       </div>
-      <!-- <div class="stock-item">购买：{{ basicInfo.numberSells }}</div> -->
       <div class="stock-item">剩余 {{ basicInfo.stores }}</div>
-    </div>
+    </div> -->
     <Coupons title="领券" />
     <van-cell>
       <template #title>
@@ -266,6 +265,7 @@ function addCartHandle() {
         </div>
       </template>
     </van-cell>
+    
     <van-cell v-if="hasSku" :border="false" is-link @click="onSkuShow">
       <template #title>
         <div class="cell-bar">
@@ -274,7 +274,10 @@ function addCartHandle() {
         </div>
       </template>
     </van-cell>
+
+    <!-- 获取商品评价 -->
     <Reputations v-if="basicInfo.id" class="mt10" :goods-id="basicInfo.id" />
+
     <Plate title="商品详情" class="mt10" />
     <div class="goods-content" v-html="content"></div>
     <div class="action-bar-perch"></div>

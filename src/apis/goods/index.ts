@@ -301,6 +301,7 @@ export function goodsRebate(data?: Recordable) {
  * 获取商品评价列表
  */
 export function goodsReputation(data?: Recordable) {
+  console.log(data);
   return request({
     url: `/shop/goods/reputation/v2`,
     method: 'post',
