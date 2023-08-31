@@ -49,7 +49,7 @@ function getGoodList() {
     page: pagination.pageCurrent,
     pageSize: pagination.pageSize,
   };
-
+  // 参数由form-data传入
   return API_GOODS.goodsList(params);
 }
 
@@ -83,7 +83,7 @@ function onGoodClicked(id: number) {
         :meta="listMeta"
       >
         <div class="list">
-          <div v-for="item in list" :key="item.id" class="list-col">
+          <div v-for="item in list.slice(0, 5)" :key="item.id" class="list-col">
             <div class="list-item">
               <div v-if="item.recommendStatus" class="list-item-badge">推荐</div>
               <van-image class="list-item-photo" :src="item.pic" :alt="item.name" />
@@ -133,7 +133,7 @@ function onGoodClicked(id: number) {
   padding-right: 5px;
 
   &-col {
-    width: 50%;
+    width: 100%;
     box-sizing: border-box;
     padding-left: 5px;
     padding-right: 5px;
@@ -165,8 +165,9 @@ function onGoodClicked(id: number) {
 
     &-photo {
       display: flex;
-      width: 100%;
-      height: 172px;
+      width: 30%;
+      height: 30%;
+      // height: 172px;
     }
 
     &-info {
