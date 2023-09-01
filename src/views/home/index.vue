@@ -62,33 +62,27 @@ function onGoodClicked(id: number) {
   <div class="container">
     <div class="swiper">
       <van-swipe :autoplay="5000" class="swiper">
-        <van-swipe-item
-          v-for="item in bannerList"
-          :key="item.id"
-          class="swiper-item"
-          @click="onBannerClicked(item.linkUrl)"
-        >
+        <van-swipe-item v-for="item in bannerList" :key="item.id" class="swiper-item"
+          @click="onBannerClicked(item.linkUrl)">
           <van-image class="swiper-item-img" fit="cover" :src="item.picUrl" :alt="item.title" />
         </van-swipe-item>
       </van-swipe>
     </div>
     <div class="main">
       <Plate class="section-header" title="商品列表" />
-      <ProList
-        ref="listRef"
-        v-model:dataSource="list"
-        mode="infinite"
-        :api="getGoodList"
-        :pagination="pagination"
-        :meta="listMeta"
-      >
+      <ProList ref="listRef" v-model:dataSource="list" mode="infinite" :api="getGoodList" :pagination="pagination"
+        :meta="listMeta">
         <div class="list">
           <div v-for="item in list.slice(0, 5)" :key="item.id" class="list-col">
-            <div class="list-item">
+            <div class="list-item" style="display: flex;">
               <div v-if="item.recommendStatus" class="list-item-badge">推荐</div>
               <van-image class="list-item-photo" :src="item.pic" :alt="item.name" />
               <div class="list-item-info">
-                <div class="list-item-title">{{ item.name }}</div>
+                <div class="list-item-info-more">
+                  <div class="list-item-title">{{ item.name }}</div>
+                  <div class="list-item-sold">已售：{{ item.numberOrders }}</div>
+                </div>
+
                 <div class="list-item-price">
                   <div class="price">
                     <div class="price-current">
@@ -172,6 +166,12 @@ function onGoodClicked(id: number) {
 
     &-info {
       padding: 5px 10px;
+      width: 70%;
+
+      &-more {
+        display: flex;
+        height: 60%;
+      }
     }
 
     &-title {
@@ -184,13 +184,24 @@ function onGoodClicked(id: number) {
       text-overflow: ellipsis;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      width: 70%;
+      margin-top: auto;
+    }
+
+    &-sold {
+      text-align: right;
+      width: 30%;
+      font-size: small;
+      font-family: emoji;
+      margin-top: auto;
     }
 
     &-price {
-      margin-top: 5px;
+      margin-bottom: auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      height: 40%;
     }
 
     .buy-btn {
