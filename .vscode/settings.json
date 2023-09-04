@@ -47,5 +47,8 @@
     "vitejs",
     "vueuse",
     "vuex"
-  ]
+  ],
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  }
 }

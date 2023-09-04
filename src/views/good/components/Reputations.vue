@@ -29,14 +29,8 @@ function getGoodsReputation() {
 
 <template>
   <div class="reputation">
-    <van-cell
-      v-if="reputationList.length"
-      :to="'/good/reputation?goodsId=' + goodsId"
-      class="mb10"
-      :title="'评价(' + reputationTotal + ')'"
-      value="全部评价"
-      is-link
-    />
+    <van-cell v-if="reputationList.length" :to="'/good/reputation?goodsId=' + goodsId" class="mb10"
+      :title="'评价(' + reputationTotal + ')'" value="全部评价" is-link />
     <van-cell v-else class="mb10" title="商品评价" value="暂无评价" />
     <div v-for="(item, index) in reputationList" :key="index" class="reputation-inner">
       <div class="reputation-inner-hd">
@@ -91,8 +85,7 @@ function getGoodsReputation() {
       flex: 1;
     }
 
-    &-stars {
-    }
+    &-stars {}
 
     &-tag {
       padding: 2px 10px;

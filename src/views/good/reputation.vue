@@ -1,14 +1,7 @@
 <template>
   <div class="container">
-    <ProList
-      v-model:dataSource="list"
-      mode="infinite"
-      :api="getDataList"
-      :afterFetch="listAfterFetch"
-      :pagination="pagination"
-      :meta="listMeta"
-      immediate
-    >
+    <ProList v-model:dataSource="list" mode="infinite" :api="getDataList" :afterFetch="listAfterFetch"
+      :pagination="pagination" :meta="listMeta" immediate>
       <div class="list">
         <div v-for="(item, index) in list" :key="index" class="list-item">
           <div class="list-item-header van-hairline--bottom">
@@ -17,7 +10,7 @@
               <div class="list-item-name">{{ item.nickName }}</div>
               <div class="list-item-star">
                 <van-rate v-model="item.rate" :size="14" color="#4f4" void-icon="star" void-color="#eee" readonly />
-                <p>{{item}}</p> 
+                <!-- <p>{{ item }}</p> -->
               </div>
             </div>
             <div class="list-item-date">{{ item.date }}</div>
@@ -35,6 +28,7 @@
 <script lang="ts">
 import API_GOODS from '@/apis/goods';
 import { goodReputationModel } from '@/model/modules/good/reputation';
+
 
 export default {
   data() {
