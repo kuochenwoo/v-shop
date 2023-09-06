@@ -256,6 +256,9 @@ export function goodsLimitation(data?: Recordable) {
 /**
  * 商品列表
  */
+// 仅有
+// id/recommendStatus/pic/name/numberOrders/minPrice/originalPrice
+// 是需要的
 export function goodsList(data?: Recordable) {
   return request({
     url: `/shop/goods/list/v2`,
