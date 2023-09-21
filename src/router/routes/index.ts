@@ -17,7 +17,7 @@ const routes = [
     name: 'Category',
     component: () => import('@/views/category/index.vue'),
     meta: {
-      title: '分类',
+      title: '技师',
       showWindowBar: true,
     },
   },

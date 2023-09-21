@@ -43,14 +43,17 @@ export function reputation2Rate(val: number) {
  *  商品评价
  * @param {*} data
  */
+// 前端转换后端传来的数据键名
 export function goodReputationModel(data: Recordable) {
+
   return data.map((v: any) => ({
     goodId: v.goods.id,
-    avatarUrl: v.user.avatarUrl || assets.avatar,
+    // avatarUrl: v.user.avatarUrl || assets.avatar,
+    avatarUrl: assets.avatar,
     nickName: v.user.nick || (v.user.mobile ? mobileShow(v.user.mobile) : `神秘用户`),
     rate: rate2Reputation(v.goods.goodReputationStr),
     remark: v.goods.goodReputationRemark || '此用户没有填写评价',
     date: v.goods.dateReputation.slice(0, 10),
-    property: v.goods.property,
+    // property: v.goods.property,
   }));
 }

@@ -83,29 +83,16 @@ function onGoodClicked(id: number) {
   <div class="container">
     <div class="swiper">
       <van-swipe :autoplay="5000" class="swiper">
-        <van-swipe-item
-          v-for="item in bannerList"
-          :key="item.id"
-          class="swiper-item"
-          @click="onBannerClicked(item.linkUrl)"
-        >
+        <van-swipe-item v-for="item in bannerList" :key="item.id" class="swiper-item"
+          @click="onBannerClicked(item.linkUrl)">
           <van-image class="swiper-item-img" fit="cover" :src="item.picUrl" :alt="item.title" />
         </van-swipe-item>
       </van-swipe>
     </div>
     <div class="main">
       <Plate class="section-header" title="商品列表" />
-      <AppList
-        v-model:loading="loading"
-        v-model:loadingMore="loadingMore"
-        mode="infinite"
-        :error="listError"
-        :hasData="hasData"
-        :noMore="noMore"
-        :meta="listMeta"
-        @load-more="loadListMore"
-        @click-error="onListError"
-      >
+      <AppList v-model:loading="loading" v-model:loadingMore="loadingMore" mode="infinite" :error="listError"
+        :hasData="hasData" :noMore="noMore" :meta="listMeta" @load-more="loadListMore" @click-error="onListError">
         <div class="list">
           <div v-for="item in list" :key="item.id" class="list-col">
             <div class="list-item" @click="onGoodClicked(item.id)">
@@ -124,7 +111,7 @@ function onGoodClicked(id: number) {
                       <span class="price-origin-integer">{{ item.originalPrice }}</span>
                     </div>
                   </div>
-                  <van-button type="primary" plain class="buy-btn">购买</van-button>
+                  <van-button type="primary" plain class="buy-btn">预约</van-button>
                 </div>
               </div>
             </div>

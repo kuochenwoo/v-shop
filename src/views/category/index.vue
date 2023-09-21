@@ -5,31 +5,31 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { onMounted, ref, unref, reactive } from 'vue';
+import { onMounted, ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import API_GOODS from '@/apis/goods';
+import API_BANNER from '@/apis/banner';
 import IMAGE_LIST_EMPTY from '@/assets/images/empty/good.png';
 
 onMounted(() => {
-  getCategoryList();
+  getBannerList();
+  listRef.value?.loadData();
 });
 
 const router = useRouter();
 
-const categoryIndex = ref(0);
-const categoryList = ref<Recordable[]>([]);
+const bannerList = ref<Recordable[]>([]);
 
-function onCategoryChange() {
-  listRef.value?.refresh();
+function getBannerList() {
+  API_BANNER.bannerList({ type: 'indexBanner' }).then((res) => {
+    bannerList.value = res.data || [];
+  });
 }
 
-function getCategoryList() {
-  API_GOODS.goodsCategoryAll().then((res) => {
-    if (res.data?.length) {
-      categoryList.value = res.data.map((v: Recordable) => ({ ...v, text: v.name }));
-      listRef.value?.loadData();
-    }
-  });
+function onBannerClicked(linkUrl: string) {
+  if (linkUrl) {
+    window.location.href = linkUrl;
+  }
 }
 
 const listRef = ref<any>(null);
@@ -46,11 +46,10 @@ const listMeta = reactive({
 
 function getGoodList() {
   const params = {
-    categoryId: unref(categoryList.value)[categoryIndex.value].id,
     page: pagination.pageCurrent,
     pageSize: pagination.pageSize,
   };
-
+  // 参数由form-data传入
   return API_GOODS.goodsList(params);
 }
 
@@ -61,39 +60,47 @@ function onGoodClicked(id: number) {
 
 <template>
   <div class="container">
+    <div class="swiper">
+      <van-swipe :autoplay="5000" class="swiper">
+        <van-swipe-item v-for="item in bannerList" :key="item.id" class="swiper-item"
+          @click="onBannerClicked(item.linkUrl)">
+          <van-image class="swiper-item-img" fit="cover" :src="item.picUrl" :alt="item.title" />
+        </van-swipe-item>
+      </van-swipe>
+    </div>
     <div class="main">
-      <van-sidebar v-model="categoryIndex" class="sidebar" @change="onCategoryChange">
-        <van-sidebar-item v-for="item in categoryList" :key="item.id" :title="item.name" />
-      </van-sidebar>
-      <div class="right-content scroller-y">
-        <ProList
-          ref="listRef"
-          v-model:dataSource="list"
-          mode="infinite"
-          :api="getGoodList"
-          :pagination="pagination"
-          :meta="listMeta"
-        >
-          <div class="list">
-            <div v-for="item in list" :key="item.id" class="list-col">
-              <div class="list-item" @click="onGoodClicked(item.id)">
-                <van-image class="list-item-photo" :src="item.pic" :alt="item.name" />
-                <div class="list-item-info">
+      <Plate class="section-header" title="技师列表" />
+      <ProList ref="listRef" v-model:dataSource="list" mode="infinite" :api="getGoodList" :pagination="pagination"
+        :meta="listMeta">
+        <div class="list">
+          <div v-for="item in list.slice(0, 5)" :key="item.id" class="list-col">
+            <div class="list-item" style="display: flex;">
+              <div v-if="item.recommendStatus" class="list-item-badge">推荐</div>
+              <van-image class="list-item-photo" :src="item.pic" :alt="item.name" />
+              <div class="list-item-info">
+                <div class="list-item-info-more">
                   <div class="list-item-title">{{ item.name }}</div>
-                  <div class="list-item-price">
-                    <div class="price">
-                      <div class="price-current">
-                        <span class="price-current-symbol">¥</span>
-                        <span class="price-current-integer">{{ item.minPrice }}</span>
-                      </div>
+                  <div class="list-item-sold">已售：{{ item.numberOrders }}</div>
+                </div>
+
+                <div class="list-item-price">
+                  <div class="price">
+                    <div class="price-current">
+                      <span class="price-current-symbol">¥</span>
+                      <span class="price-current-integer">{{ item.minPrice }}</span>
+                    </div>
+                    <div v-if="item.originalPrice > 0" class="price-origin">
+                      <span class="price-origin-symbol">¥</span>
+                      <span class="price-origin-integer">{{ item.originalPrice }}</span>
                     </div>
                   </div>
+                  <van-button type="primary" plain class="buy-btn" @click="onGoodClicked(item.id)">预约</van-button>
                 </div>
               </div>
             </div>
           </div>
-        </ProList>
-      </div>
+        </div>
+      </ProList>
     </div>
     <!-- 底部导航栏 -->
     <Tabbar />
@@ -101,29 +108,26 @@ function onGoodClicked(id: number) {
 </template>
 
 <style lang="less" scoped>
-.main {
-  height: calc(100vh - 50px - var(--safe-area-height-bottom));
-  display: flex;
-}
+.swiper {
+  width: 100%;
+  height: 180px;
+  margin-bottom: 10px;
 
-.sidebar {
-  // margin-right: 10px;
-  width: 100px;
-  height: 100%;
-  background-color: var(--color-bg-1);
-}
-
-.right-content {
-  flex: 1;
-  background: var(--color-bg-2);
+  &-item,
+  &-item-img {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .list {
   display: flex;
   flex-wrap: wrap;
+  padding-left: 5px;
+  padding-right: 5px;
 
   &-col {
-    width: 50%;
+    width: 100%;
     box-sizing: border-box;
     padding-left: 5px;
     padding-right: 5px;
@@ -132,16 +136,42 @@ function onGoodClicked(id: number) {
 
   &-item {
     position: relative;
+    text-align: left;
     overflow: hidden;
+    background: var(--color-bg-2);
+    border-radius: 8px;
+    // box-shadow: 0px 2px 4px 3px rgba(243, 243, 243, 0.5);
+
+    &-badge {
+      position: absolute;
+      top: 15px;
+      left: 0;
+      z-index: 20;
+      display: inline-block;
+      padding: 2px 4px;
+      color: #fff;
+      background-color: var(--color-red);
+      font-size: 10px;
+      line-height: normal;
+      border-radius: 0 8px 8px 0;
+      padding-right: 6px;
+    }
 
     &-photo {
       display: flex;
-      width: 100%;
-      height: 127px;
+      width: 30%;
+      height: 30%;
+      // height: 172px;
     }
 
     &-info {
-      padding: 5px 0;
+      padding: 5px 10px;
+      width: 70%;
+
+      &-more {
+        display: flex;
+        height: 60%;
+      }
     }
 
     &-title {
@@ -154,13 +184,24 @@ function onGoodClicked(id: number) {
       text-overflow: ellipsis;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      width: 70%;
+      margin-top: auto;
+    }
+
+    &-sold {
+      text-align: right;
+      width: 30%;
+      font-size: small;
+      font-family: emoji;
+      margin-top: auto;
     }
 
     &-price {
-      margin-top: 5px;
+      margin-bottom: auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      height: 40%;
     }
 
     .buy-btn {

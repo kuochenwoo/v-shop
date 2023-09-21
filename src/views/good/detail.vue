@@ -12,11 +12,11 @@ import API_GOODS from '@/apis/goods';
 import API_CART from '@/apis/cart';
 import { shoppingCartAddParams } from '@/apis/cart/types';
 import { ISku, IInitialSku } from '@/components/Sku/types';
-import Coupons from './components/Coupons.vue';
+// import Coupons from './components/Coupons.vue';
 import Reputations from './components/Reputations.vue';
 import { decimalFormat, priceIntegerFormat } from '@/utils/format';
 import { debounce } from '@/utils';
-import { getAfterSaleTitle } from '@/model/modules/order/afterSale';
+// import { getAfterSaleTitle } from '@/model/modules/order/afterSale';
 
 import { useOrderStore } from '@/store/modules/order';
 import { usePage } from '@/hooks/shared/usePage';
@@ -84,8 +84,8 @@ function getGoodsDetail() {
 
     document.title = unref(basicInfo).name;
 
-    getSkuData(res.data.basicInfo, res.data?.properties ?? [], res.data?.skuList ?? []);
-    getAfterService();
+    // getSkuData(res.data.basicInfo, res.data?.properties ?? [], res.data?.skuList ?? []);
+    // getAfterService();
     // TODO 商品收藏
   });
 }
@@ -143,39 +143,39 @@ const onSkuConfirm = debounce((data) => {
           number: unref(initialSku).selectedNum,
           pic: unref(sku).goodInfo.pic,
           price: data.selectedSkuComb.price,
-          logisticsId: unref(basicInfo).logisticsId,
-          propertyList: unref(initialSku).selectedPropList,
+          // logisticsId: unref(basicInfo).logisticsId,
+          // propertyList: unref(initialSku).selectedPropList,
         },
       ],
     });
   }
 }, 1500);
 
-function getSkuData(basicInfo: Recordable, properties: Recordable[], skuList: Recordable[]) {
-  sku.value = {
-    goodsId: basicInfo.id,
-    stock: basicInfo.stores,
-    price: basicInfo.minPrice,
-    goodInfo: {
-      id: basicInfo.id,
-      pic: basicInfo.pic,
-      name: basicInfo.name,
-      unit: basicInfo.unit,
-    },
-    propList: properties,
-    skuList: skuList.sort((a, b) => a.price - b.price), // 按照商品价格从低到高排序
-  };
-}
+// function getSkuData(basicInfo: Recordable, properties: Recordable[], skuList: Recordable[]) {
+//   sku.value = {
+//     goodsId: basicInfo.id,
+//     stock: basicInfo.stores,
+//     price: basicInfo.minPrice,
+//     goodInfo: {
+//       id: basicInfo.id,
+//       pic: basicInfo.pic,
+//       name: basicInfo.name,
+//       unit: basicInfo.unit,
+//     },
+//     propList: properties,
+//     skuList: skuList.sort((a, b) => a.price - b.price), // 按照商品价格从低到高排序
+//   };
+// }
 
 function onConcatService() {
   showToast('未开放：客服');
 }
 
 // 售后服务
-const afterSaleTitle = ref('');
-function getAfterService() {
-  afterSaleTitle.value = getAfterSaleTitle(unref(basicInfo).afterSale);
-}
+// const afterSaleTitle = ref('');
+// function getAfterService() {
+//   afterSaleTitle.value = getAfterSaleTitle(unref(basicInfo).afterSale);
+// }
 
 // 购物车
 const cartCount = ref<number | undefined>(undefined);
@@ -236,14 +236,14 @@ function addCartHandle() {
       <div class="desc">
         <div class="desc-hd">
           <div class="desc-title van-multi-ellipsis--l2">{{ basicInfo.name }}</div>
-          <div v-if="basicInfo.characteristic" class="desc-brief">
+          <!-- <div v-if="basicInfo.characteristic" class="desc-brief">
             {{ basicInfo.characteristic }}
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
 
-    <Coupons title="领券" />
+    <!-- <Coupons title="领券" />
     <van-cell>
       <template #title>
         <div class="cell-bar">
@@ -251,7 +251,7 @@ function addCartHandle() {
           <div class="cell-bar-text">{{ afterSaleTitle }}</div>
         </div>
       </template>
-    </van-cell>
+    </van-cell> -->
 
     <van-cell v-if="hasSku" :border="false" is-link @click="onSkuShow">
       <template #title>
@@ -266,7 +266,7 @@ function addCartHandle() {
     <Reputations v-if="basicInfo.id" class="mt10" :goods-id="basicInfo.id" />
 
     <!-- content也是由后端返回，全部为html格式 -->
-    <Plate title="商品详情" class="mt10" />
+    <Plate title="服务详情" class="mt10" />
     <div class="goods-content" v-html="content"></div>
     <div class="action-bar-perch"></div>
     <!-- 商品导航栏 -->
@@ -399,10 +399,11 @@ function addCartHandle() {
   padding-top: 10px;
   overflow: hidden;
   color: var(--color-text-1);
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 12px;
+  line-height: 20px;
   text-align: left;
   word-wrap: break-word;
+  padding: 7px 5px 5px 5px;
 
   :deep(i)mg {
     display: block;

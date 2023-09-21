@@ -53,8 +53,13 @@ function getGoodList() {
   return API_GOODS.goodsList(params);
 }
 
-function onGoodClicked(id: number) {
+function onItemClick(id: number) {
   router.push({ path: '/good/detail', query: { id } });
+}
+
+function onBookClicked() {
+  // 否则，执行跳转到预约页面的逻辑
+  router.push({ path: '/category' });
 }
 </script>
 
@@ -69,12 +74,12 @@ function onGoodClicked(id: number) {
       </van-swipe>
     </div>
     <div class="main">
-      <Plate class="section-header" title="商品列表" />
+      <Plate class="section-header" title="服务列表" />
       <ProList ref="listRef" v-model:dataSource="list" mode="infinite" :api="getGoodList" :pagination="pagination"
         :meta="listMeta">
         <div class="list">
-          <div v-for="item in list.slice(0, 5)" :key="item.id" class="list-col">
-            <div class="list-item" style="display: flex;">
+          <div v-for="item in list" :key="item.id" class="list-col">
+            <div class="list-item" style="display: flex;" @click="onItemClick(item.id)">
               <div v-if="item.recommendStatus" class="list-item-badge">推荐</div>
               <van-image class="list-item-photo" :src="item.pic" :alt="item.name" />
               <div class="list-item-info">
@@ -94,7 +99,7 @@ function onGoodClicked(id: number) {
                       <span class="price-origin-integer">{{ item.originalPrice }}</span>
                     </div>
                   </div>
-                  <van-button type="primary" plain class="buy-btn" @click="onGoodClicked(item.id)">购买</van-button>
+                  <van-button type="primary" plain class="buy-btn" @click.stop="onBookClicked">预约</van-button>
                 </div>
               </div>
             </div>

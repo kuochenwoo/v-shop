@@ -157,9 +157,14 @@ export function goodsDel(data?: Recordable) {
 /**
  * 商品详情
  */
+// 返回basicInfo和pics，content对象
+// pic是列表，但仅需一个，包含id/pic
+// basicInfo包含status/statusStr/stores/name/originalPrice/id/minPrice/
+// content是一个HTML字符串
 export function goodsDetail(data?: Recordable) {
   return request({
-    url: `/shop/goods/detail`,
+    url: `product/v1/services/detail`,
+    // url: `/shop/goods/detail`,
     method: 'get',
     params: data,
   });
@@ -258,10 +263,12 @@ export function goodsLimitation(data?: Recordable) {
  */
 // 仅有
 // id/recommendStatus/pic/name/numberOrders/minPrice/originalPrice
+// status/statusStr/stores/name/originalPrice/id/minPrice/
 // 是需要的
 export function goodsList(data?: Recordable) {
   return request({
-    url: `/shop/goods/list/v2`,
+    url: `/product/v1/services/list`,
+    // url: `/shop/goods/list/v2`,
     method: 'post',
     data,
   });
@@ -303,6 +310,9 @@ export function goodsRebate(data?: Recordable) {
 /**
  * 获取商品评价列表
  */
+// 需要返回goods对象和user对象
+// goods：id/goodReputationStr/goodReputationRemark/dateReputation
+// user：avatarUrl/nick||mobile （随机生成即可）
 export function goodsReputation(data?: Recordable) {
   console.log(data);
   return request({

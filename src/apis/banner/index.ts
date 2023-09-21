@@ -9,7 +9,8 @@ import { request } from '@/utils/request';
 // 只有 id/picUrl/title/linkUrl 是需要的
 export function bannerList(data?: Recordable) {
   return request({
-    url: `/banner/list`,
+    url: `/product/v1/banner/list`,
+    // url: `/banner/list`,
     method: 'get',
     params: data,
   });

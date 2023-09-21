@@ -86,13 +86,13 @@ export const tabBar = {
       activeIcon: 'home-o',
     },
     {
-      text: '分类',
+      text: '技师',
       pagePath: '/category',
       icon: 'apps-o',
       activeIcon: 'apps-o',
     },
     {
-      text: '购物车',
+      text: '订单',
       pagePath: '/cart',
       icon: 'shopping-cart-o',
       activeIcon: 'shopping-cart',
