@@ -66,7 +66,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           // http://192.168.10.106:2022/dev-api/shop/goods/category/all <--- 原请求地址
           // https://api.it120.cc/xiaochengxu/shop/goods/category/all <--- 实际请求地址
           // target: `https://${env.VITE_APP_API_HOST}/${env.VITE_APP_SUB_DOMAIN}`, // https://api.it120.cc/xiaochengxu
-          target: `http://192.168.10.107:${env.VITE_APP_API_PORT}/${env.VITE_APP_SUB_DOMAIN}`,
+          target: `http://192.168.10.101:${env.VITE_APP_API_PORT}/${env.VITE_APP_SUB_DOMAIN}`,
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path.replace(/^\/dev-api/, ''),

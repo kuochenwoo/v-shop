@@ -274,6 +274,14 @@ export function goodsList(data?: Recordable) {
   });
 }
 
+export function productList(data?: Recordable) {
+  return request({
+    url: `/product/v1/product/list`,
+    method: 'post',
+    data,
+  });
+}
+
 /**
  * 获取商品价格
  */
@@ -351,4 +359,5 @@ export default {
   goodsPriceDay,
   goodsRebate,
   goodsReputation,
+  productList,
 };

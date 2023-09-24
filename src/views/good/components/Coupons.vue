@@ -16,11 +16,11 @@ const show = ref(false);
 const couponList = ref<Recordable[]>([]);
 
 function getCouponList() {
-  API_DISCOUNTS.discountsCoupons({ type: 'NO_PWD' }).then((res) => {
-    if (res.data) {
-      couponList.value = res.data;
-    }
-  });
+  // API_DISCOUNTS.discountsCoupons({ type: 'NO_PWD' }).then((res) => {
+  //   if (res.data) {
+  couponList.value = [1];
+  // }
+  // });
 }
 
 function onItemClicked(index: number) {
@@ -87,10 +87,12 @@ defineExpose({
 
 <template>
   <div class="coupons">
-    <van-cell v-if="couponList.length" class="mb10" :title="title" is-link @click="open" />
+    <van-cell v-if="couponList.length" class="mb10" center @click="open">
+      <div slot="title" class="van-cell-title">查看评论</div>
+    </van-cell>
     <!-- 弹层 -->
     <van-popup v-model:show="show" round closeable position="bottom">
-      <div class="coupons-header van-hairline--bottom">优惠券</div>
+      <div class="coupons-header van-hairline--bottom">评论列表</div>
       <div class="coupons-body">
         <div class="coupon-list">
           <div v-for="(item, index) in couponList" :key="item.id" class="coupon-list-item">
@@ -120,6 +122,8 @@ defineExpose({
 
 <style lang="less" scoped>
 .coupons {
+  height: 20px;
+
   &-header {
     box-sizing: border-box;
     text-align: center;
@@ -147,6 +151,7 @@ defineExpose({
   padding: 10px 15px;
   max-height: 70vh;
   overflow-y: auto;
+
   &-header {
     position: absolute;
     box-sizing: border-box;
@@ -159,6 +164,7 @@ defineExpose({
     text-align: center;
   }
 }
+
 .coupon-list-item {
   box-sizing: border-box;
   height: 76px;
@@ -176,25 +182,31 @@ defineExpose({
     text-align: center;
     border-right: 1px slategrey #eee;
   }
+
   &-money {
     font-size: 24px;
     font-weight: bold;
     // margin-bottom:10px;
   }
+
   &-moneyHreshold {
     font-size: 12px;
   }
+
   &-bd {
     flex: 1;
   }
+
   &-name {
     font-size: 14px;
     padding: 5px 0;
   }
+
   &-dateEndDays {
     font-size: 12px;
     color: #d7a0a5;
   }
+
   &-btn {
     margin-right: 25px;
     display: inline-block;
@@ -205,6 +217,7 @@ defineExpose({
     line-height: normal;
     border-radius: 0.8em;
   }
+
   &-btn-clicked {
     color: #ff4444;
     background: #ffffff;
@@ -214,10 +227,17 @@ defineExpose({
 }
 
 .mb10 {
-  margin-bottom: 10px;
+  margin-bottom: 1px;
+  height: 5px;
+  background: transparent;
 }
 
 .fz12 {
   font-size: 12px;
+}
+
+.van-cell-title {
+  color: #1832d0;
+  text-decoration: underline;
 }
 </style>
