@@ -1,69 +1,50 @@
 <script setup lang="ts">
-import { onMounted, ref, unref } from 'vue';
-import { showToast, showLoadingToast, closeToast } from 'vant';
-import API_DISCOUNTS from '@/apis/discounts';
+import { ref } from 'vue';
+import avatar from '@/assets/images/avatar_default.png';
 
 defineProps({
   title: { type: String },
 });
 
-// 优惠券
-onMounted(() => {
-  getCouponList();
-});
-
 const show = ref(false);
-const couponList = ref<Recordable[]>([]);
 
-function getCouponList() {
-  // API_DISCOUNTS.discountsCoupons({ type: 'NO_PWD' }).then((res) => {
-  //   if (res.data) {
-  couponList.value = [1];
-  // }
-  // });
+interface UserData {
+  nickName: string;
+  rate: number;
+  remark: string;
 }
 
-function onItemClicked(index: number) {
-  const coupon = unref(couponList)[index];
+const list = ref<UserData[]>([]);
 
-  // if (coupon.pwd) {
-  //   showToast({ message: '本券需要使用口令才能领取', duration: 1500 });
-  //   return;
-  // }
 
-  showLoadingToast({
-    forbidClick: true,
-    message: '加载中...',
-    duration: 0,
-  });
+function getDataList() {
+  const nickNameList = ['系统默认好评', '不错', '好评'];
+  const mockData = [];
 
-  const params = {
-    id: coupon.id,
-  };
+  for (let i = 0; i < 4; i++) {
+    const randomNickName = `匿名用户${generateRandomString(4)}`;
+    const randomRemark = nickNameList[Math.floor(Math.random() * nickNameList.length)];
 
-  API_DISCOUNTS.discountsFetch(params)
-    .then(() => {
-      closeToast();
-      showToast({
-        message: '恭喜,抢到了~',
-        duration: 2000,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      closeToast();
-      if (Number(err.code) === 700) {
-        showToast({
-          message: '很遗憾,没抢到~',
-          duration: 2000,
-        });
-      } else {
-        showToast({
-          message: err.msg,
-          duration: 2000,
-        });
-      }
-    });
+    const data = {
+      nickName: randomNickName,
+      rate: 5, // 固定为5
+      remark: randomRemark,
+    };
+
+    mockData.push(data);
+  }
+
+  list.value = [...mockData];
+}
+
+function generateRandomString(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
+  }
+  return result;
 }
 
 function close() {
@@ -71,6 +52,7 @@ function close() {
 }
 
 function open() {
+  getDataList();
   toggle(true);
 }
 
@@ -87,34 +69,28 @@ defineExpose({
 
 <template>
   <div class="coupons">
-    <van-cell v-if="couponList.length" class="mb10" center @click="open">
-      <div slot="title" class="van-cell-title">查看评论</div>
+    <van-cell class="mb10" center @click="open">
+      <div slot="title" class="van-cell-title">查看评价</div>
     </van-cell>
     <!-- 弹层 -->
     <van-popup v-model:show="show" round closeable position="bottom">
       <div class="coupons-header van-hairline--bottom">评论列表</div>
-      <div class="coupons-body">
-        <div class="coupon-list">
-          <div v-for="(item, index) in couponList" :key="item.id" class="coupon-list-item">
-            <div class="coupon-list-item-hd">
-              <div class="coupon-list-item-money"><span class="fz12">¥</span>{{ item.moneyMin }}</div>
-              <div class="coupon-list-item-moneyHreshold">满{{ item.moneyHreshold }}元可用</div>
+      <div class="list">
+        <div v-for="(item, index) in list" :key="index" class="list-item">
+          <div class="reputation-inner-hd">
+            <van-image class="reputation-inner-media" :src="avatar" />
+            <div class="reputation-inner-name">{{ item.nickName }}</div>
+            <div class="reputation-inner-stars">
+              <van-rate v-model="item.rate" :size="14" color="#f44" void-icon="star" void-color="#eee" readonly />
             </div>
-            <div class="coupon-list-item-bd">
-              <div class="coupon-list-item-name">{{ item.moneyMin }}元券</div>
-              <div v-if="item.dateEndType === 0" class="coupon-list-item-dateEndDays">
-                领取后 {{ item.dateEnd.slice(0, 10) }} 到期
-              </div>
-              <div v-if="item.dateEndType === 1" class="coupon-list-item-dateEndDays">
-                领取后 {{ item.dateEndDays }} 天后到期
-              </div>
-            </div>
-            <div class="coupon-list-item-btn" @click="onItemClicked(index)">立即领取</div>
+          </div>
+          <div class="reputation-inner-ft">
+            <div>{{ item.remark }}</div>
           </div>
         </div>
       </div>
       <div class="coupons-footer" @click="close">
-        <van-button type="primary" round block @click="close">完成</van-button>
+        <van-button type="primary" round block @click="close">返回</van-button>
       </div>
     </van-popup>
   </div>
@@ -147,84 +123,8 @@ defineExpose({
   }
 }
 
-.coupon-list {
-  padding: 10px 15px;
-  max-height: 70vh;
-  overflow-y: auto;
 
-  &-header {
-    position: absolute;
-    box-sizing: border-box;
-    width: 100%;
-    top: 0;
-    left: 0;
-    font-size: 14px;
-    color: #333;
-    padding: 10px 0;
-    text-align: center;
-  }
-}
 
-.coupon-list-item {
-  box-sizing: border-box;
-  height: 76px;
-  position: relative;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  background: #ffeeee;
-  color: #ff4b52;
-  margin-bottom: 10px;
-  border-radius: 10px;
-
-  &-hd {
-    width: 100px;
-    text-align: center;
-    border-right: 1px slategrey #eee;
-  }
-
-  &-money {
-    font-size: 24px;
-    font-weight: bold;
-    // margin-bottom:10px;
-  }
-
-  &-moneyHreshold {
-    font-size: 12px;
-  }
-
-  &-bd {
-    flex: 1;
-  }
-
-  &-name {
-    font-size: 14px;
-    padding: 5px 0;
-  }
-
-  &-dateEndDays {
-    font-size: 12px;
-    color: #d7a0a5;
-  }
-
-  &-btn {
-    margin-right: 25px;
-    display: inline-block;
-    padding: 0.2em 0.5em;
-    color: #fff;
-    background: #ff4444;
-    font-size: 10px;
-    line-height: normal;
-    border-radius: 0.8em;
-  }
-
-  &-btn-clicked {
-    color: #ff4444;
-    background: #ffffff;
-    border: 1px solid #ff4444;
-    pointer-events: none;
-  }
-}
 
 .mb10 {
   margin-bottom: 1px;
@@ -239,5 +139,113 @@ defineExpose({
 .van-cell-title {
   color: #1832d0;
   text-decoration: underline;
+  font-size: 12px;
+}
+
+.list-item {
+  background: var(--color-bg-2);
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-left: 3%;
+
+
+  &-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 5px;
+  }
+
+  &-name {
+    font-size: 14px;
+    color: var(--color-text-1);
+    line-height: 1;
+  }
+
+  &-inner {
+    flex: 1;
+    padding-top: 4px;
+  }
+
+  &-header {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  &-content {
+    padding: 10px 15px;
+    color: var(--color-text-3);
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  &-prop {
+    margin-top: 5px;
+    font-size: 12px;
+  }
+}
+
+.reputation {
+  background: var(--color-bg-2);
+
+  &-inner {
+    padding: 0 15px;
+    font-size: 14px;
+
+    &-hd {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: var(--color-text-1);
+    }
+
+    &-media {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 5px;
+    }
+
+    &-name {
+      flex: 1;
+      margin-left: 10px;
+    }
+
+    &-stars {
+      margin-left: 10px;
+    }
+
+    &-tag {
+      padding: 2px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--color-border-1);
+      font-size: 10px;
+      color: var(--color-text-3);
+      margin-right: 10px;
+    }
+
+    &-bd {
+      padding: 10px 0;
+    }
+
+    &-ft {
+      padding: 5px 0 10px;
+      color: var(--color-text-3);
+      margin-left: 10px;
+    }
+
+    &-prop {
+      margin-top: 5px;
+      font-size: 12px;
+    }
+  }
 }
 </style>
