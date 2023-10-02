@@ -11,7 +11,7 @@ export function useCountDown() {
   function start(initialValue = 0) {
     count.value = initialValue;
     timer = setInterval(() => {
-      console.log(count.value);
+      // console.log(count.value);
       if (count.value > 0) {
         count.value--;
       } else {

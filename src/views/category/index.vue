@@ -42,8 +42,6 @@ function formatTime(itemTime) {
 
   // 将后端时间转化为UTC+8时区的时间
   const utc8Time = backendTime;
-  console.log(111, currentTime);
-  console.log(222, backendTime);
   // 判断后端时间是否早于当前时间
   if (utc8Time < currentTime) {
     return '现在可约';

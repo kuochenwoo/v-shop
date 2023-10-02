@@ -1,6 +1,7 @@
 import qs from 'qs';
 import { getAPI } from '@/utils';
 import { request } from '@/utils/request';
+import { Console } from 'console';
 
 /**
  * 校验邮件验证码是否正确
@@ -17,8 +18,11 @@ export function verificationMailCheck(data?: Recordable) {
  * 获取邮件验证码
  */
 export function verificationMailGet(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  console.log(data?.to)
+  console.log(data?.captcha)
   return request({
-    url: `/verification/mail/get`,
+    url: `http://${host}:7071/api/user/v1/send_code`,
     method: 'get',
     params: data,
   });
@@ -38,8 +42,9 @@ export function verificationPicCheck(data?: Recordable) {
 /**
  * 获取图形验证码
  */
-export function verificationPicGet(data?: Recordable) {
-  return `${getAPI()}/verification/pic/get?${qs.stringify(data)}`;
+export function verificationPicGet() {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  return `http://${host}:7071/api/user/v1/captcha`
 }
 
 /**

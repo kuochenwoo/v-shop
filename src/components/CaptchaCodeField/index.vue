@@ -3,7 +3,7 @@ import { reactive, unref, watch } from 'vue';
 import { showToast } from 'vant';
 import API_VERIFICATION from '@/apis/verification';
 import { sms } from '@/constants/modules/user';
-import { isMobile } from '@/utils/validate';
+import { isEmail } from '@/utils/validate';
 import { useCountDown } from '@/hooks/shared/useCountDown';
 
 const props = defineProps({
@@ -21,28 +21,27 @@ const state = reactive({
 
 function onSmsBtnClicked() {
   if (!unref(props.mobile)) {
-    showToast('请输入手机号');
+    showToast('请输入邮箱地址');
     return;
   }
 
-  if (!isMobile(unref(String(props.mobile)))) {
-    showToast('手机号格式错误');
+  if (!isEmail(unref(String(props.mobile)))) {
+    showToast('邮箱格式错误');
     return;
   }
 
   state.captchaShow = true;
 }
 
-function onCaptchaConfirm({ requestId, code }) {
-  API_VERIFICATION.verificationSmsGet({
-    mobile: unref(props.mobile),
-    key: requestId,
-    picCode: code,
+function onCaptchaConfirm({ code }) {
+  API_VERIFICATION.verificationMailGet({
+    to: unref(props.mobile),
+    captcha: code,
   })
     .then(() => {
       state.captchaShow = false;
       showToast({
-        message: '短信已发送，请查收',
+        message: '邮件已发送，请查收',
         duration: 2000,
       });
 

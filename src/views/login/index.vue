@@ -90,49 +90,20 @@ function onSubmit() {
       <form class="form">
         <div class="form-item">
           <div class="form-item-country">中国 +86</div>
-          <van-field
-            v-model="mobile"
-            class="form-field"
-            :border="false"
-            type="tel"
-            placeholder="请输入手机号"
-            autocomplete="username"
-            clearable
-          />
+          <van-field v-model="mobile" class="form-field" :border="false" type="tel" placeholder="请输入邮箱地址"
+            autocomplete="username" clearable />
           <input type="text" hidden autocomplete="username" />
         </div>
         <div v-if="loginType === 'system'" class="form-item">
-          <PwdField
-            v-model="pwd"
-            class="form-field"
-            :border="false"
-            placeholder="请输入密码"
-            autocomplete="current-password"
-            clearable
-          />
+          <PwdField v-model="pwd" class="form-field" :border="false" placeholder="请输入密码" autocomplete="current-password"
+            clearable />
         </div>
         <div v-if="loginType === 'sms'" class="form-item">
-          <CaptchaCodeField
-            v-model="smsCode"
-            :mobile="mobile"
-            class="form-field"
-            :border="false"
-            type="number"
-            maxlength="4"
-            placeholder="请输入4位验证码"
-            clearable
-          />
+          <CaptchaCodeField v-model="smsCode" :mobile="mobile" class="form-field" :border="false" type="number"
+            maxlength="4" placeholder="请输入4位验证码" clearable />
         </div>
-        <van-button
-          class="form-submit"
-          block
-          :disabled="!submitted"
-          :loading="submitLoading"
-          loading-text="登录中..."
-          type="primary"
-          @click="onSubmit"
-          >登录</van-button
-        >
+        <van-button class="form-submit" block :disabled="!submitted" :loading="submitLoading" loading-text="登录中..."
+          type="primary" @click="onSubmit">登录</van-button>
       </form>
       <div class="check-type">
         <div class="check-type-hd">
@@ -150,9 +121,7 @@ function onSubmit() {
     <div class="footer">
       <div class="footer-agreement">
         <van-checkbox v-model="agree" icon-size="16px" />
-        <span> 阅读并同意</span><a href="javascript:void(0);">《用户协议》</a>和<a href="javascript:void(0);"
-          >《隐私政策》</a
-        >
+        <span> 阅读并同意</span><a href="javascript:void(0);">《用户协议》</a>和<a href="javascript:void(0);">《隐私政策》</a>
       </div>
     </div>
   </div>

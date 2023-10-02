@@ -36,10 +36,8 @@ function onRefresh() {
 }
 
 const getCaptcha = throttle(() => {
-  const requestTimeStamp = `${Date.now()}`;
-  requestId.value = requestTimeStamp;
   code.value = '';
-  pic.value = API_VERIFICATION.verificationPicGet({ key: requestTimeStamp });
+  pic.value = `${API_VERIFICATION.verificationPicGet()}?${Date.now()}`;
 }, 3000);
 
 function onSubmit() {
@@ -90,22 +88,10 @@ defineExpose({
       <div class="captcha-header van-hairline--bottom">请完成安全验证</div>
       <div class="captcha-body">
         <div class="captcha-code">
-          <van-field
-            v-model="code"
-            clearable
-            :border="false"
-            placeholder="输入验证码"
-            class="captcha-field"
-            type="text"
-            focus
-          >
+          <van-field v-model="code" clearable :border="false" placeholder="输入验证码" class="captcha-field" type="text" focus>
           </van-field>
-          <img
-            class="captcha-img"
-            :style="[{ width: codeWidth + 'px', background: '#eee' }]"
-            :src="pic"
-            @click="onRefresh"
-          />
+          <img class="captcha-img" :style="[{ width: codeWidth + 'px', background: '#eee' }]" :src="pic"
+            @click="onRefresh" />
         </div>
         <div class="tips" @click="onRefresh">看不清，换一张</div>
         <div class="captcha-footer">
