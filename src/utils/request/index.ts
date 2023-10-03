@@ -18,7 +18,7 @@ const instance: AxiosInstance = axios.create({
   // 基础接口地址
   baseURL: getAPI(),
   // 请求超时事件
-  timeout: 1000 * 20,
+  timeout: 1000 * 30,
   // 使用 form-urlencoded 格式，即伪表单
   headers: {
     'Content-Type': ContentTypeEnum.FORM_URLENCODED,
@@ -96,9 +96,18 @@ export function request<T = ServiceResult>(config: CustomRequestConfig): Promise
     ...config.requestOptions,
   };
 
+  const headers = config.headers || {}; // Use config.headers instead of config.requestOptions.headers
+  const contentType = config.contentType;
+  if (contentType) {
+    headers['Content-Type'] = contentType;
+  }
+
   return new Promise((resolve, reject) => {
     instance
-      .request<any, AxiosResponse<ServiceResult>>(config)
+      .request<any, AxiosResponse<ServiceResult>>({
+        ...config,
+        headers, // Pass the headers directly here
+      })
       .then((res: AxiosResponse<ServiceResult>) => {
         resolve(res as unknown as Promise<T>);
       })

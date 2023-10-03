@@ -2,6 +2,7 @@ import type { AxiosRequestConfig } from 'axios';
 
 export interface CustomRequestConfig extends AxiosRequestConfig {
   requestOptions?: RequestOptions;
+  contentType?: ContentTypeEnum; // Add this property
 }
 
 export type ErrorMessageMode = 'none' | 'message' | undefined;

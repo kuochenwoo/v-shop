@@ -19,8 +19,6 @@ export function verificationMailCheck(data?: Recordable) {
  */
 export function verificationMailGet(data?: Recordable) {
   const host: string = import.meta.env.VITE_APP_API_HOST_MY;
-  console.log(data?.to)
-  console.log(data?.captcha)
   return request({
     url: `http://${host}:7071/api/user/v1/send_code`,
     method: 'get',

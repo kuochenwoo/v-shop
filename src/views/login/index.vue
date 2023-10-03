@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { showToast } from 'vant';
 import { loginProviderType } from '@/constants/modules/user';
 import { getClientInfo } from '@/utils';
-import { isMobile } from '@/utils/validate';
+import { isEmail } from '@/utils/validate';
 
 import { useUserStore } from '@/store/modules/user';
 
@@ -43,13 +43,13 @@ const submitted = computed(() => {
 });
 
 function onSubmit() {
-  if (!isMobile(unref(mobile))) {
+  if (!isEmail(unref(mobile))) {
     showToast('手机号格式错误');
     return;
   }
 
   const params: Recordable = {
-    mobile: unref(mobile),
+    mail: unref(mobile),
     deviceId: getClientInfo().deviceId,
     deviceName: getClientInfo().deviceType,
   };
@@ -89,7 +89,6 @@ function onSubmit() {
       <div class="safe-tips">为了你的帐号安全，请用手机号登录</div>
       <form class="form">
         <div class="form-item">
-          <div class="form-item-country">中国 +86</div>
           <van-field v-model="mobile" class="form-field" :border="false" type="tel" placeholder="请输入邮箱地址"
             autocomplete="username" clearable />
           <input type="text" hidden autocomplete="username" />

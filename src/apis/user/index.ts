@@ -1,4 +1,5 @@
 import { request } from '@/utils/request';
+import { ContentTypeEnum } from '@/utils/request/types';
 
 /**
  * 查看用户资产
@@ -70,10 +71,12 @@ export function userMBindMobile(data?: Recordable) {
  * 用户登录[手机号码]
  */
 export function userMLogin(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/user/m/login`,
+    url: `http://${host}:7071/api/user/v1/login`,
     method: 'post',
     data,
+    contentType: ContentTypeEnum.JSON,
   });
 }
 
@@ -92,10 +95,12 @@ export function userMLoginMobile(data?: Recordable) {
  * 用户注册[手机号]
  */
 export function userMRegister(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/user/m/register`,
+    url: `http://${host}:7071/api/user/v1/register`,
     method: 'post',
     data,
+    contentType: ContentTypeEnum.JSON,
   });
 }
 

@@ -5,21 +5,18 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive } from 'vue';
+import { ref, reactive, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import API_GOODS from '@/apis/goods';
 import API_BANNER from '@/apis/banner';
 import Coupons from '@/views/good/components/Coupons.vue';
 import IMAGE_LIST_EMPTY from '@/assets/images/empty/good.png';
-
-onMounted(() => {
-  getBannerList();
-  listRef.value?.loadData();
-});
-
+import { usePage } from '@/hooks/shared/usePage';
+const { hasLogin, goLogin } = usePage();
+const bannerList = ref<Recordable[]>([]);
 const router = useRouter();
 
-const bannerList = ref<Recordable[]>([]);
+const listEmptyImage = IMAGE_LIST_EMPTY;
 
 function getBannerList() {
   API_BANNER.bannerList({ type: 'indexBanner' }).then((res) => {
@@ -99,62 +96,82 @@ function getProductList() {
 function onGoodClicked(id: number) {
   router.push({ path: '/good/detail', query: { id } });
 }
+
+watchEffect(() => {
+  console.log('hasLogin changed:', hasLogin.value);
+  if (hasLogin.value) {
+    // Perform your actions here when hasLogin becomes true
+    getBannerList();
+    listRef.value?.loadData();
+  }
+});
+
 </script>
 
+
 <template>
-  <div class="container">
-    <div class="swiper">
-      <van-swipe :autoplay="5000" class="swiper">
-        <van-swipe-item v-for="item in bannerList" :key="item.id" class="swiper-item"
-          @click="onBannerClicked(item.linkUrl)">
-          <van-image class="swiper-item-img" fit="cover" :src="item.picUrl" :alt="item.title" />
-        </van-swipe-item>
-      </van-swipe>
-    </div>
-    <div class="main">
-      <Plate class="section-header" title="技师列表" />
-      <ProList ref="listRef" v-model:dataSource="list" mode="infinite" :api="getProductList" :pagination="pagination"
-        :meta="listMeta">
-        <div class="list">
-          <div v-for="item in list" :key="item.id" class="list-col">
-            <div class="list-item" style="display: flex;">
-              <div v-if="item.available" class="list-item-badge">可服务</div>
-              <van-image class="list-item-photo" :src="item.coverImg" :alt="item.name" />
+  <template v-if="hasLogin">
+    <div class="container">
+      <div class="swiper">
+        <van-swipe :autoplay="5000" class="swiper">
+          <van-swipe-item v-for="item in bannerList" :key="item.id" class="swiper-item"
+            @click="onBannerClicked(item.linkUrl)">
+            <van-image class="swiper-item-img" fit="cover" :src="item.picUrl" :alt="item.title" />
+          </van-swipe-item>
+        </van-swipe>
+      </div>
+      <div class="main">
+        <Plate class="section-header" title="技师列表" />
+        <ProList ref="listRef" v-model:dataSource="list" mode="infinite" :api="getProductList" :pagination="pagination"
+          :meta="listMeta">
+          <div class="list">
+            <div v-for="item in list" :key="item.id" class="list-col">
+              <div class="list-item" style="display: flex;">
+                <div v-if="item.available" class="list-item-badge">可服务</div>
+                <van-image class="list-item-photo" :src="item.coverImg" :alt="item.name" />
 
-              <div class="list-item-info">
+                <div class="list-item-info">
 
-                <div class="list-item-info-more">
-                  <div class="list-item-title">{{ item.name }}</div>
-                  <div class="list-item-detail-more">
-                    <div class="list-item-distance">车程约：{{ item.distance }}分钟</div>
-                    <div class="list-item-appointment">
-                      <span class="list-item-appointment-bk1">最早可约：</span>
-                      <span class="list-item-appointment-bk2">{{ formatTime(item.availableTime) }}</span>
+                  <div class="list-item-info-more">
+                    <div class="list-item-title">{{ item.name }}</div>
+                    <div class="list-item-detail-more">
+                      <div class="list-item-distance">车程约：{{ item.distance }}分钟</div>
+                      <div class="list-item-appointment">
+                        <span class="list-item-appointment-bk1">最早可约：</span>
+                        <span class="list-item-appointment-bk2">{{ formatTime(item.availableTime) }}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="list-item-detail">{{ item.detail }}</div>
-                <div class="reputation-inner-stars">
-                  <van-rate v-model="item.role" :size="14" color="#f44" icon="like" void-icon="like" void-color="#eee"
-                    readonly :count="item.role" />
-                </div>
-                <div class="list-item-price">
-                  <div class="list-item-review">
-                    <Coupons title="查看评价" />
+                  <div class="list-item-detail">{{ item.detail }}</div>
+                  <div class="reputation-inner-stars">
+                    <van-rate v-model="item.role" :size="14" color="#f44" icon="like" void-icon="like" void-color="#eee"
+                      readonly :count="item.role" />
                   </div>
-                  <van-button type="primary" plain class="buy-btn" @click="onGoodClicked(item.id)">立即预约</van-button>
+                  <div class="list-item-price">
+                    <div class="list-item-review">
+                      <Coupons title="查看评价" />
+                    </div>
+                    <van-button type="primary" plain class="buy-btn" @click="onGoodClicked(item.id)">立即预约</van-button>
+                  </div>
                 </div>
               </div>
-            </div>
 
+            </div>
           </div>
-        </div>
-      </ProList>
+        </ProList>
+      </div>
+      <!-- 底部导航栏 -->
+      <Tabbar />
     </div>
-    <!-- 底部导航栏 -->
-    <Tabbar />
-  </div>
+  </template>
+  <van-empty v-else class="empty" :image="listEmptyImage">
+    <!-- <template> -->
+    <div class="empty-title">登录后才能看到技师列表</div>
+    <van-button class="empty-btn" type="primary" round @click="goLogin">去登录</van-button>
+    <!-- </template> -->
+  </van-empty>
 </template>
+
 
 <style lang="less" scoped>
 .swiper {
@@ -346,6 +363,32 @@ function onGoodClicked(id: number) {
     }
   }
 }
+
+
+.empty {
+  text-align: center;
+
+  &-title {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--color-text-1);
+  }
+
+  &-txt {
+    font-size: 14px;
+    color: var(--color-text-3);
+  }
+
+  &-btn {
+    box-sizing: border-box;
+    height: 32px;
+    line-height: 30px;
+    font-size: 14px;
+    margin: 10px auto 0;
+    border-radius: 16px;
+  }
+}
+
 
 .reputation {
   background: var(--color-bg-2);

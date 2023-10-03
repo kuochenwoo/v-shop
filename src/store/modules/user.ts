@@ -32,9 +32,10 @@ export const useUserStore = defineStore({
         const loginProvider = loginProviderType[provider];
 
         const res = await API_USER[loginProvider.apiName](params);
-        const { token } = res.data;
-
+        const token = res.data;
         this.token = token;
+
+        // token 设置在local storage里面
         storage.set('token', token);
         return res.data;
       } catch (error) {

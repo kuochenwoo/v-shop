@@ -7,7 +7,7 @@ import { isEmail } from '@/utils/validate';
 import { useCountDown } from '@/hooks/shared/useCountDown';
 
 const props = defineProps({
-  mobile: [String, Number],
+  mail: [String, Number],
 });
 
 const { count: smsCount, start: countdown } = useCountDown();
@@ -20,12 +20,12 @@ const state = reactive({
 });
 
 function onSmsBtnClicked() {
-  if (!unref(props.mobile)) {
+  if (!unref(props.mail)) {
     showToast('请输入邮箱地址');
     return;
   }
 
-  if (!isEmail(unref(String(props.mobile)))) {
+  if (!isEmail(unref(String(props.mail)))) {
     showToast('邮箱格式错误');
     return;
   }
@@ -35,7 +35,7 @@ function onSmsBtnClicked() {
 
 function onCaptchaConfirm({ code }) {
   API_VERIFICATION.verificationMailGet({
-    to: unref(props.mobile),
+    to: unref(props.mail),
     captcha: code,
   })
     .then(() => {

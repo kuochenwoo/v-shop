@@ -8,5 +8,9 @@ export function fakeNickName(options: Recordable) {
     return `用户${options.mobile.slice(-4)}`;
   }
 
+  if(type === 'mail') {
+    return `用户${options.mail.slice(0, 4) + "****"}`;
+  }
+
   return `用户${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
 }

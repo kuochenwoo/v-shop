@@ -180,16 +180,8 @@ function onSubmit() {
         <div class="goods">
           <div class="goods-header van-hairline--bottom">
             <div class="goods-header-hd">
-              <video
-                class="goods-header-cart"
-                :src="cartVideoSrc"
-                width="40"
-                height="40"
-                autoplay
-                muted
-                loop
-                type="video/mp4"
-              ></video>
+              <video class="goods-header-cart" :src="cartVideoSrc" width="40" height="40" autoplay muted loop
+                type="video/mp4"></video>
               <span>购物车</span>
             </div>
             <div class="goods-header-bd" @click="onEditStatusChange">
@@ -216,12 +208,8 @@ function onSubmit() {
                     <span class="list-item-price-integer">{{ decimalFormat(item.price) }}</span>
                   </div>
                   <template v-if="item.status === 0">
-                    <van-stepper
-                      :model-value="item.number"
-                      async-change
-                      class="sku-num-stepper"
-                      @change="onGoodChange($event, index)"
-                    />
+                    <van-stepper :model-value="item.number" async-change class="sku-num-stepper"
+                      @change="onGoodChange($event, index)" />
                   </template>
                 </div>
               </div>
@@ -257,9 +245,8 @@ function onSubmit() {
               <span class="submit-bar-price-integer">{{ decimalFormat(totalPrice) }}</span>
             </div>
           </div>
-          <van-button class="submit-bar-button" round type="primary" @click="onSubmit"
-            >去结算({{ totalGoodCount }})</van-button
-          >
+          <van-button class="submit-bar-button" round type="primary" @click="onSubmit">去结算({{ totalGoodCount
+          }})</van-button>
         </template>
       </div>
     </div>
@@ -374,6 +361,7 @@ function onSubmit() {
 
     &-price {
       color: var(--color-primary);
+
       &-symbol {
         font-size: 12px;
         margin-right: 2px;

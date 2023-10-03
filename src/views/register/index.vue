@@ -13,7 +13,7 @@ const router = useRouter();
 const route = useRoute();
 
 const title = ref('免费注册');
-const mobile = ref('');
+const mail = ref('');
 const smsCode = ref('');
 const pwd = ref('');
 const pwd2 = ref('');
@@ -21,11 +21,11 @@ const agree = ref(true);
 
 const submitLoading = ref(false);
 const submitted = computed(() => {
-  return unref(mobile) && unref(smsCode) && unref(pwd) && unref(pwd2);
+  return unref(mail) && unref(smsCode) && unref(pwd) && unref(pwd2);
 });
 
 function onSubmit() {
-  if (!isEmail(unref(mobile))) {
+  if (!isEmail(unref(mail))) {
     showToast('邮箱格式错误');
     return;
   }
@@ -41,9 +41,9 @@ function onSubmit() {
   }
 
   const params = {
-    mobile: unref(mobile),
+    mail: unref(mail),
     code: unref(smsCode),
-    nick: fakeNickName({ type: 'mobile', mobile: unref(mobile) }),
+    name: fakeNickName({ type: 'mail', mail: unref(mail) }),
     pwd: unref(pwd),
     autoLogin: true,
   };
@@ -73,12 +73,11 @@ function onSubmit() {
       <div class="h2">{{ title }}</div>
       <form class="form">
         <div class="form-item">
-          <div class="form-item-country">中国 +86</div>
-          <van-field v-model="mobile" class="form-field" :border="false" type="tel" placeholder="请输入邮箱地址" clearable />
+          <van-field v-model="mail" class="form-field" :border="false" type="tel" placeholder="请输入邮箱地址" clearable />
         </div>
         <div class="form-item">
-          <CaptchaCodeField v-model="smsCode" :mobile="mobile" class="form-field" :border="false" type="number"
-            maxlength="4" placeholder="请输入4位验证码" clearable />
+          <CaptchaCodeField v-model="smsCode" :mail="mail" class="form-field" :border="false" type="number" maxlength="6"
+            placeholder="请输入6位验证码" clearable />
         </div>
         <div class="form-item">
           <PwdField key="pwd" v-model="pwd" class="form-field" :border="false" placeholder="请设置8-25位(数字+字母)密码"
