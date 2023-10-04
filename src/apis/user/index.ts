@@ -27,8 +27,9 @@ export function userCashLog(data?: Recordable) {
  * 查看用户详情
  */
 export function userDetail(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;  
   return request({
-    url: `/user/detail`,
+    url: `http://${host}:7071/api/user/v1/detail`,
     method: 'get',
     params: data,
   });
@@ -38,8 +39,9 @@ export function userDetail(data?: Recordable) {
  * 修改用户信息
  */
 export function userModify(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/user/modify`,
+    url: `http://${host}:7071/api/user/v1/modify`,
     method: 'get',
     params: data,
   });

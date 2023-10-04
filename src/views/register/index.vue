@@ -73,7 +73,7 @@ function onSubmit() {
       <div class="h2">{{ title }}</div>
       <form class="form">
         <div class="form-item">
-          <van-field v-model="mail" class="form-field" :border="false" type="tel" placeholder="请输入邮箱地址" clearable />
+          <van-field v-model="mail" class="form-field" :border="false" type="text" placeholder="请输入邮箱地址" clearable />
         </div>
         <div class="form-item">
           <CaptchaCodeField v-model="smsCode" :mail="mail" class="form-field" :border="false" type="number" maxlength="6"

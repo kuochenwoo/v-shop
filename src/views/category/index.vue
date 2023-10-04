@@ -170,6 +170,7 @@ watchEffect(() => {
     <van-button class="empty-btn" type="primary" round @click="goLogin">去登录</van-button>
     <!-- </template> -->
   </van-empty>
+  <Tabbar />
 </template>
 
 

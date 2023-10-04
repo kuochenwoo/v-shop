@@ -89,7 +89,7 @@ function onSubmit() {
       <div class="safe-tips">为了你的帐号安全，请用手机号登录</div>
       <form class="form">
         <div class="form-item">
-          <van-field v-model="mobile" class="form-field" :border="false" type="tel" placeholder="请输入邮箱地址"
+          <van-field v-model="mobile" class="form-field" :border="false" type="text" placeholder="请输入邮箱地址"
             autocomplete="username" clearable />
           <input type="text" hidden autocomplete="username" />
         </div>

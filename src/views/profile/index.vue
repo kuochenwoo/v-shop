@@ -2,7 +2,7 @@
 import { computed, onMounted, ref, unref } from 'vue';
 import { showToast, showLoadingToast, closeToast } from 'vant';
 import API_USER from '@/apis/user';
-import UploadAvatar from '@/components/UploadAvatar/index.vue';
+// import UploadAvatar from '@/components/UploadAvatar/index.vue';
 import { isEmpty } from '@/utils/validate';
 import { assets } from '@/constants';
 
@@ -10,8 +10,8 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/modules/user';
 
 onMounted(() => {
-  avatarUrl.value = unref(userInfo).avatarUrl ?? '';
-  nick.value = unref(userInfo).nick ?? '';
+  // avatarUrl.value = unref(userInfo).avatarUrl ?? '';
+  name.value = unref(userInfo).name ?? '';
   province.value = unref(userInfo).province ?? '';
   city.value = unref(userInfo).city ?? '';
 });
@@ -20,8 +20,8 @@ const router = useRouter();
 const userStore = useUserStore();
 
 const userInfo = computed(() => userStore.getUserInfo);
-const avatarUrl = ref('');
-const nick = ref('');
+// const avatarUrl = ref('');
+const name = ref('');
 const province = ref('');
 const city = ref('');
 const areaLabel = computed(() => {
@@ -36,9 +36,9 @@ const areaLabel = computed(() => {
   return `${unref(province)} - ${unref(city)}`;
 });
 
-function onFileSuccess(res: any) {
-  avatarUrl.value = res.data.url;
-}
+// function onFileSuccess(res: any) {
+//   avatarUrl.value = res.data.url;
+// }
 
 function onAreaChange({ selectedOptions }) {
   province.value = selectedOptions[0].text;
@@ -47,15 +47,15 @@ function onAreaChange({ selectedOptions }) {
 
 function onSubmit() {
   if (
-    unref(avatarUrl) === unref(userInfo).avatarUrl &&
-    unref(nick) === unref(userInfo).nick &&
+    // unref(avatarUrl) === unref(userInfo).avatarUrl &&
+    unref(name) === unref(userInfo).name &&
     unref(province) === unref(userInfo).province &&
     unref(city) === unref(userInfo).city
   ) {
     showToast('您没有修改任何东西哦');
     return;
   }
-  if (isEmpty(unref(nick))) {
+  if (isEmpty(unref(name))) {
     showToast('昵称不能为空');
     return;
   }
@@ -66,8 +66,8 @@ function onSubmit() {
   }
 
   const params = {
-    nick: unref(nick),
-    avatarUrl: unref(avatarUrl),
+    name: unref(name),
+    // avatarUrl: unref(avatarUrl),
     province: unref(province),
     city: unref(city),
   };
@@ -93,27 +93,20 @@ function onSubmit() {
 <template>
   <div class="container">
     <div class="header">
-      <UploadAvatar @success="onFileSuccess">
-        <div class="avatar">
-          <van-image class="avatar-img" :src="avatarUrl || assets.avatar" />
-          <div class="avatar-title">点击更换头像</div>
-        </div>
-      </UploadAvatar>
+      <!-- <UploadAvatar @success="onFileSuccess"> -->
+      <div class="avatar">
+        <van-image class="avatar-img" :src="assets.avatar" />
+        <!-- <div class="avatar-title">点击更换头像</div> -->
+      </div>
+      <!-- </UploadAvatar> -->
     </div>
     <div class="main">
       <div class="nick">
         <div class="nick-label">昵称</div>
-        <van-field v-model="nick" placeholder="12个字以内" />
+        <van-field v-model="name" placeholder="12个字以内" />
       </div>
-      <AreaField
-        :model-value="areaLabel"
-        label="所在地"
-        placeholder="点击选择城市"
-        input-align="right"
-        :border="false"
-        :columns-num="2"
-        @change="onAreaChange"
-      />
+      <AreaField :model-value="areaLabel" label="所在地" placeholder="点击选择城市" input-align="right" :border="false"
+        :columns-num="2" @change="onAreaChange" />
     </div>
 
     <AffixBar size="medium" @click-btn="onSubmit" />
@@ -154,6 +147,7 @@ function onSubmit() {
     color: var(--color-text-1);
   }
 }
+
 .nick {
   padding: 20px 16px 0;
   background: var(--color-bg-2);

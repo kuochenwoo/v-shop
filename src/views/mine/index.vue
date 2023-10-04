@@ -6,33 +6,23 @@ export default {
 
 <script setup lang="ts">
 import { computed, onMounted, ref, unref } from 'vue';
-import API_USER from '@/apis/user';
-import API_DISCOUNTS from '@/apis/discounts';
-import API_ORDER from '@/apis/order';
+// import API_ORDER from '@/apis/order';
 import MineSvgWaveBg from '@/components/MineSvgWaveBg/index.vue';
-import { countPair } from '@/utils/format';
 import { assets } from '@/constants';
 import ICON_ART from '@/assets/images/icon_art.png';
-import ICON_DEVICE from '@/assets/images/icon_device.png';
-import { showClientInfoPopup } from '@/components/AppClientInfoPopup';
+import { showToast } from 'vant';
 import { useUserStore } from '@/store/modules/user';
 import { usePage } from '@/hooks/shared/usePage';
 
 onMounted(() => {
   if (unref(hasLogin)) {
     userStore.getUserDetail();
-    getCounts();
+    // getCounts();
   }
 });
 
 const userStore = useUserStore();
 const { hasLogin, goLogin, goPage } = usePage();
-
-// 统计
-const growth = ref(0); // 成长值
-const balance = ref(undefined);
-const score = ref(undefined);
-const couponCanUse = ref(undefined);
 
 // 我的订单
 const orderList = ref<Recordable[]>([
@@ -46,22 +36,6 @@ const orderList = ref<Recordable[]>([
   },
   {
     value: '',
-    label: '待发货',
-    icon: 'tosend',
-    path: '/order/list?status=1',
-    count: undefined,
-    countKey: 'count_id_no_transfer',
-  },
-  {
-    value: '',
-    label: '待收货',
-    icon: 'logistics',
-    path: '/order/list?status=2',
-    count: undefined,
-    countKey: 'count_id_no_confirm',
-  },
-  {
-    value: '',
     label: '评价',
     icon: 'comment-o',
     path: '/order/list?status=3',
@@ -70,7 +44,7 @@ const orderList = ref<Recordable[]>([
   },
   {
     value: '',
-    label: '退款/售后',
+    label: '售后',
     icon: 'after-sale',
     path: '/refund',
     count: undefined,
@@ -79,52 +53,42 @@ const orderList = ref<Recordable[]>([
 
 // 常用功能
 const toolList = ref<Recordable[]>([
-  { icon: 'balance-o', title: '我的钱包', path: '/wallet' },
   { icon: 'point-gift-o', title: '积分兑换', path: '/integral/exchange' },
   { icon: 'coupon-o', title: '优惠券', path: '/coupon' },
-  { icon: 'location-o', title: '收货地址', path: '/address' },
-  { icon: 'setting-o', title: '设置', path: '/setting' },
   { icon: ICON_ART, title: '主题', path: '/theme' },
-  { icon: ICON_DEVICE, title: '我的设备', value: 'device' },
 ]);
 
 function onToolClicked(item) {
+  console.log(item)
+  if (item.title != '主题') {
+    showToast({
+      message: `${item.title}敬请期待`,
+      duration: 1000 * 2,
+    });
+    return;
+  }
+
   if (item.path) {
     goPage(item.path);
     return;
   }
-
-  if (item.value === 'device') {
-    showClientInfoPopup();
-  }
 }
 const userInfo = computed(() => userStore.getUserInfo);
-const userLevel = computed(() => userStore.getUserLevel);
 
 function onEasterEgg() {
   const el = document.querySelector('.header-avatar') as HTMLElement;
   el.classList.toggle('active');
 }
 
-function getCounts() {
-  API_USER.userAmount().then((res) => {
-    balance.value = res.data?.balance ?? 0;
-    growth.value = res.data?.growth ?? 0;
-    score.value = res.data?.score ?? 0;
-  });
+// function getCounts() {
+//   API_ORDER.orderStatistics().then((res) => {
+//     const orderCount = res.data;
 
-  API_ORDER.orderStatistics().then((res) => {
-    const orderCount = res.data;
-
-    orderList.value.forEach((item) => {
-      orderCount[item.countKey] && (item.count = orderCount[item.countKey]);
-    });
-  });
-
-  API_DISCOUNTS.discountsStatistics().then((res) => {
-    couponCanUse.value = res.data?.canUse ?? 0;
-  });
-}
+//     orderList.value.forEach((item) => {
+//       orderCount[item.countKey] && (item.count = orderCount[item.countKey]);
+//     });
+//   });
+// }
 </script>
 
 <template>
@@ -135,15 +99,10 @@ function getCounts() {
         <van-image class="header-avatar" :src="userInfo.avatarUrl || assets.avatar" alt="" @click.stop="onEasterEgg" />
         <div class="header-info">
           <div class="header-nick van-ellipsis mb10">
-            {{ userInfo.nick || `还没有昵称` }}
+            {{ userInfo.name || `还没有昵称` }}
           </div>
           <div class="header-sub">
-            <span class="header-sub-item">ID {{ userInfo.id }}</span>
-            <span class="header-sub-item-separate">|</span>
-            <span class="header-sub-item">成长值 {{ growth }}</span>
-            <span class="header-sub-item-separate">|</span>
-            <!-- 会员等级 -->
-            <span v-if="userLevel.id" class="header-sub-item"> 段位 {{ userLevel.name }} </span>
+            <span class="header-sub-item">签名： {{ userInfo.slogan }}</span>
           </div>
         </div>
       </div>
@@ -161,23 +120,6 @@ function getCounts() {
     </div>
     <div class="main">
       <div class="group"></div>
-      <!-- 我的钱包 -->
-      <div class="group">
-        <div class="count-list">
-          <div class="count-list-item" @click="goPage('/integral')">
-            <div class="count-list-item-value">{{ countPair(score, 0) }}</div>
-            <div class="count-list-item-label">积分</div>
-          </div>
-          <div class="count-list-item" @click="goPage('/coupon')">
-            <div class="count-list-item-value">{{ countPair(couponCanUse, 0) }}</div>
-            <div class="count-list-item-label">优惠券</div>
-          </div>
-          <div class="count-list-item" @click="goPage('/wallet')">
-            <div class="count-list-item-value">{{ countPair(balance) }}</div>
-            <div class="count-list-item-label">余额</div>
-          </div>
-        </div>
-      </div>
       <!-- 订单 -->
       <div class="group">
         <div class="group-header van-hairline--bottom" @click="goPage('/order/list')">
@@ -338,6 +280,7 @@ function getCounts() {
 .group {
   .style-box();
   margin: 0 15px 15px 15px;
+
   &-inner {
     padding: 10px 0;
   }
@@ -380,6 +323,7 @@ function getCounts() {
     padding: 10px 0;
     display: flex;
     align-items: center;
+    justify-content: space-evenly;
 
     &-item {
       box-sizing: border-box;
@@ -405,6 +349,7 @@ function getCounts() {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: space-evenly;
 
     &-item {
       box-sizing: border-box;
@@ -488,6 +433,7 @@ function getCounts() {
   .header {
     background-color: var(--color-bg-2);
   }
+
   .header-tag {
     background-color: rgba(255, 255, 255, 0.2);
   }

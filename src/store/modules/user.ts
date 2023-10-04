@@ -62,11 +62,11 @@ export const useUserStore = defineStore({
     async getUserDetail() {
       try {
         const res = await API_USER.userDetail();
-        const { base = {}, userLevel = {} } = res.data;
+        console.log(res.data)
+        const base = res.data;
 
         this.userInfo = base;
         storage.set('userInfo', base);
-        this.userLevel = userLevel;
       } catch (error) {
         console.error('获取用户详情失败', error);
       }
@@ -79,9 +79,9 @@ export function useUserStoreWithOut() {
 }
 
 export interface UserInfo {
-  id?: number;
-  nick?: string;
-  avatar?: string;
+  slogan?: number;
+  name?: string;
+  headImg?: string;
   [key: string]: any;
 }
 export interface UserLevel {
