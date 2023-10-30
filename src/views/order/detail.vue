@@ -14,7 +14,7 @@ import { setClipboardData } from '@/utils/web/clipboard';
 import { makePhoneCall } from '@/utils/web/makePhoneCall';
 import Price from '@/components/Price/index.vue';
 import OrderSteps from './components/OrderSteps.vue';
-import OrderRate from './components/OrderRate.vue';
+// import OrderRate from './components/OrderRate.vue';
 import { decimalFormat } from '@/utils/format';
 
 import { useOrderStore } from '@/store/modules/order';
@@ -28,18 +28,18 @@ const router = useRouter();
 const route = useRoute();
 
 const stepsPopupShow = ref(false);
-function onStepsOpen() {
-  stepsPopupShow.value = true;
-}
+// function onStepsOpen() {
+//   stepsPopupShow.value = true;
+// }
 
 const ratePopupShow = ref(false);
-function onOrderReputation() {
-  ratePopupShow.value = true;
-}
+// function onOrderReputation() {
+//   ratePopupShow.value = true;
+// }
 
-function onRateSuccess() {
-  onRefresh();
-}
+// function onRateSuccess() {
+//   onRefresh();
+// }
 
 const orderStore = useOrderStore();
 function onOrderCancel(orderId: number) {
@@ -72,7 +72,7 @@ function onOrderPay(_orderId: number) {
 
 function onConcatService() {
   makePhoneCall({
-    phoneNumber: '10086', // 模拟打电话
+    phoneNumber: '88881234', // 模拟打电话
   });
 }
 
@@ -121,6 +121,35 @@ function onRefresh() {
   getDetail();
 }
 
+function formatDatetime(datetime: string) {
+  const date = new Date(datetime);
+
+  // Get the components (year, month, day, hour, minute, second)
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1; // Months are 0-based, so add 1
+  const day = date.getDate();
+  const hour = date.getHours();
+  const minute = date.getMinutes();
+  const second = date.getSeconds();
+
+  // Create a formatted date string
+  const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:${second.toString().padStart(2, '0')}`;
+  return formattedDate;
+}
+
+function getOrderStatus(input) {
+  switch (input) {
+    case 'NEW':
+      return '未支付订单';
+    case 'PAY':
+      return '订单已支付';
+    case 'CANCEL':
+      return '订单已取消';
+    default:
+      return '未知状态';
+  }
+}
+
 const isLoading = ref(false);
 const pullRefreshDisabled = ref(false);
 const orderInfo = ref<Recordable>({});
@@ -129,7 +158,7 @@ const logistics = ref<Recordable>({});
 const logList = ref<Recordable[]>([]);
 
 function getDetail() {
-  API_ORDER.orderDetail({ orderNumber: route.query.orderNumber })
+  API_ORDER.orderDetail({ outTradeNo: route.query.outTradeNo })
     .then((res) => {
       orderInfo.value = res.data.orderInfo;
       goods.value = res.data.goods;
@@ -137,7 +166,7 @@ function getDetail() {
       logistics.value = res.data?.logistics ?? {};
 
       // 待支付的订单
-      if (unref(orderInfo).status === 0 && unref(orderInfo).dateClose) {
+      if (unref(orderInfo).state === 'NEW' && unref(orderInfo).dateClose) {
         const end = dayjs(unref(orderInfo).dateClose);
         const now = dayjs();
         closeTime.value = end.diff(now);
@@ -167,26 +196,22 @@ watchEffect(() => {
   <div class="container">
     <van-pull-refresh v-model="isLoading" :disabled="pullRefreshDisabled" @refresh="onRefresh">
       <div class="header">
-        <div :class="['order-status', `order-status--${orderInfo.status}`]">
-          <div class="order-status-title">{{ orderInfo.statusStr }}</div>
-          <template v-if="orderInfo.status === 0 && closeTime > 0">
+        <div :class="['order-status', `order-status--${orderInfo.state}`]">
+          <div class="order-status-title">{{ getOrderStatus(orderInfo.state) }}</div>
+          <template v-if="orderInfo.state === 'NEW' && closeTime > 0">
             <div class="order-status-desc">
-              请于<van-count-down
-                class="count-down"
-                :time="closeTime"
-                format="mm 分 ss 秒"
-                @finish="onCountDownFinish"
-              />内付款， 超时订单将自动关闭
+              请于<van-count-down class="count-down" :time="closeTime" format="mm 分 ss 秒" @finish="onCountDownFinish" />内付款，
+              超时订单将自动关闭
             </div>
           </template>
         </div>
-        <div class="order-step" @click="onStepsOpen">
+        <!-- <div class="order-step" @click="onStepsOpen">
           <span class="order-step-label">订单跟踪</span>
           <van-icon class="order-step-icon" name="arrow" />
-        </div>
+        </div> -->
         <OrderSteps v-model:show="stepsPopupShow" :list="logList" />
       </div>
-      <template v-if="orderInfo.isNeedLogistics">
+      <!-- <template v-if="orderInfo.isNeedLogistics">
         <div class="address van-hairline--top">
           <div class="address-hd">
             <div class="address-inner">
@@ -203,7 +228,7 @@ watchEffect(() => {
           </template>
           <template v-else>无</template>
         </van-cell>
-      </template>
+      </template> -->
       <!-- 商品列表 -->
       <div class="section">
         <div class="section-header van-hairline--bottom">
@@ -212,9 +237,9 @@ watchEffect(() => {
         </div>
         <div class="list">
           <div v-for="(item, index) in goods" :key="index" class="list-item" @click="onGoodClicked(item.goodsId)">
-            <van-image fit="contain" class="list-item-pic" :src="item.pic" />
+            <van-image fit="contain" class="list-item-pic" :src="item.servicePic" />
             <div class="list-item-content">
-              <div class="list-item-title">{{ item.goodsName }}</div>
+              <div class="list-item-title">{{ item.serviceName }}-{{ item.productName }}</div>
               <div class="list-item-desc">
                 <div v-if="item.property" class="list-item-prop">
                   {{ item.property }}
@@ -223,38 +248,38 @@ watchEffect(() => {
               <div class="list-item-bottom">
                 <div class="list-item-price text-primary-color">
                   <span class="list-item-price-symbol">¥</span>
-                  <span class="list-item-price-integer">{{ decimalFormat(item.amountSingle) }}</span>
+                  <span class="list-item-price-integer">{{ decimalFormat(item.amount) }}</span>
                 </div>
-                <div class="list-item-number">x{{ item.number }}</div>
+                <!-- <div class="list-item-number">x{{ item.number }}</div> -->
               </div>
             </div>
           </div>
         </div>
-        <div class="subtotal">
+        <!-- <div class="subtotal">
           <span class="subtotal-label">商品小计：</span>
           <span class="subtotal-price">
             <span class="subtotal-price-symbol">¥</span>
-            <span class="subtotal-price-integer">{{ decimalFormat(orderInfo.amount) }}</span>
+            <span class="subtotal-price-integer">{{ decimalFormat(orderInfo.totalAmount) }}</span>
           </span>
-        </div>
+        </div> -->
       </div>
       <!-- 备注 -->
-      <div class="section">
+      <!-- <div class="section">
         <van-cell title="买家留言" class="cell" :value="orderInfo.remark || '无'" />
-      </div>
+      </div> -->
       <!-- 金额统计信息 -->
       <div class="section">
         <div class="amount">
-          <div class="amount-hd">商品金额</div>
-          <div class="amount-bd">¥ {{ decimalFormat(orderInfo.amount) }}</div>
+          <div class="amount-hd">服务金额</div>
+          <div class="amount-bd">¥ {{ decimalFormat(orderInfo.totalAmount) }}</div>
         </div>
-        <div v-if="orderInfo.isNeedLogistics" class="amount">
+        <!-- <div v-if="orderInfo.isNeedLogistics" class="amount">
           <div class="amount-hd">运费</div>
           <div class="amount-bd">+ {{ decimalFormat(orderInfo.amountLogistics) }}</div>
-        </div>
+        </div> -->
         <div class="amount amount-total-price">
-          <span class="amount-total-price-label">{{ orderInfo.status === 0 ? '需付款：' : '实付款：' }}</span>
-          <Price class="amount-total-price-price" :price="orderInfo.amountReal" />
+          <span class="amount-total-price-label">{{ orderInfo.state === 'NEW' ? '需付款：' : '实付款：' }}</span>
+          <Price class="amount-total-price-price" :price="orderInfo.payAmount" />
         </div>
       </div>
       <!-- 订单信息 -->
@@ -262,20 +287,14 @@ watchEffect(() => {
         <div class="order-no">
           <div class="order-no-p">
             订单编号：
-            <span class="order-no-p-value">{{ orderInfo.orderNumber }}</span>
-            <van-button
-              class="order-no-copy-btn"
-              plain
-              type="default"
-              size="mini"
-              @click="onCopy(orderInfo.orderNumber)"
-            >
+            <span class="order-no-p-value">{{ orderInfo.outTradeNo }}</span>
+            <van-button class="order-no-copy-btn" plain type="default" size="mini" @click="onCopy(orderInfo.outTradeNo)">
               复制
             </van-button>
           </div>
           <div class="order-no-p">
             下单时间：
-            <span class="order-no-p-value"> {{ orderInfo.dateAdd }}</span>
+            <span class="order-no-p-value"> {{ formatDatetime(orderInfo.createTime) }}</span>
           </div>
           <div class="order-no-p">
             支付方式：
@@ -285,10 +304,15 @@ watchEffect(() => {
             付款方式：
             <span class="order-no-p-value">钱包余额</span>
           </div>
-          <div v-if="orderInfo.isNeedLogistics" class="order-no-p">
+          <div class="order-no-p">
+            联系客服:
+            <van-button icon="service" class="action-bar-btn-small" round @click.stop="onConcatService"> 联系客服
+            </van-button>
+          </div>
+          <!-- <div v-if="orderInfo.isNeedLogistics" class="order-no-p">
             配送方式：
             <span class="order-no-p-value"> 普通快递</span>
-          </div>
+          </div> -->
         </div>
       </div>
     </van-pull-refresh>
@@ -296,15 +320,15 @@ watchEffect(() => {
     <div class="action-bar-wrap">
       <div class="action-bar">
         <!-- ▼ 操作按钮组（一行最好不要超过3个） -->
-        <template v-if="orderInfo.status === -1 || orderInfo.status === 3 || orderInfo.status === 4">
+        <template v-if="orderInfo.state === 'PAY' || orderInfo.state === 'CANCEL'">
           <van-button class="action-bar-btn" round @click.stop="onOrderDelete(orderInfo.id)"> 删除订单 </van-button>
         </template>
-        <template v-if="orderInfo.status === 0">
+        <template v-if="orderInfo.state === 'NEW'">
           <div class="action-bar-hd">
             <span class="action-bar-total">合计：</span>
             <div class="action-bar-price">
               <span class="action-bar-price-symbol">¥</span>
-              <span class="action-bar-price-integer">{{ decimalFormat(orderInfo.amountReal) }}</span>
+              <span class="action-bar-price-integer">{{ decimalFormat(orderInfo.totalAmount) }}</span>
             </div>
           </div>
           <van-button class="action-bar-btn" round plain @click.stop="onOrderCancel(orderInfo.id)">
@@ -314,20 +338,17 @@ watchEffect(() => {
             去支付
           </van-button>
         </template>
-        <template v-if="orderInfo.status === 1">
+        <!-- <template v-if="orderInfo.state === 'NEW'">
           <van-button icon="service" class="action-bar-btn" round @click.stop="onConcatService"> 联系客服 </van-button>
-        </template>
-        <template v-if="orderInfo.status === 2">
-          <van-button class="action-bar-btn" round @click.stop="onOrderDelivery(orderInfo.id)">确认收货</van-button>
-        </template>
-        <template v-if="orderInfo.status === 3">
-          <van-button class="action-bar-btn" round @click.stop="onOrderReputation">评价</van-button>
+        </template> -->
+        <template v-if="orderInfo.state === 'PAY'">
+          <van-button class="action-bar-btn" round @click.stop="onOrderDelivery(orderInfo.id)">确认消费</van-button>
         </template>
         <!-- ▲ 操作按钮组 -->
       </div>
     </div>
-    <!-- 评价弹层 -->
-    <OrderRate v-model:show="ratePopupShow" :goods="goods" :order-info="orderInfo" @success="onRateSuccess" />
+    <!-- 评价弹层
+    <OrderRate v-model:show="ratePopupShow" :goods="goods" :order-info="orderInfo" @success="onRateSuccess" /> -->
   </div>
 </template>
 
@@ -400,66 +421,69 @@ watchEffect(() => {
   // align-items: center;
   padding: 8px 15px;
   background: var(--color-bg-2);
+
   &-hd {
     flex: 1;
     // padding:0 10px;
     padding-left: 20px;
   }
+
   &-bd {
     margin-top: 10px;
     padding: 10px 15px 5px;
     font-size: 14px;
     color: #333;
   }
+
   &-inner {
     position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     &-icon {
       position: absolute;
       top: 2px;
       left: -20px;
     }
+
     &-title {
       font-size: 14px;
       color: #333;
       font-weight: bold;
       margin-bottom: 5px;
     }
+
     &-bottom {
       font-size: 12px;
       color: #999;
     }
   }
+
   &:before {
     position: absolute;
     right: 0;
     bottom: 0;
     left: 0;
     height: 2px;
-    background: -webkit-repeating-linear-gradient(
-      135deg,
-      #ff6c6c 0,
-      #ff6c6c 20%,
-      transparent 0,
-      transparent 25%,
-      #1989fa 0,
-      #1989fa 45%,
-      transparent 0,
-      transparent 50%
-    );
-    background: repeating-linear-gradient(
-      -45deg,
-      #ff6c6c 0,
-      #ff6c6c 20%,
-      transparent 0,
-      transparent 25%,
-      #1989fa 0,
-      #1989fa 45%,
-      transparent 0,
-      transparent 50%
-    );
+    background: -webkit-repeating-linear-gradient(135deg,
+        #ff6c6c 0,
+        #ff6c6c 20%,
+        transparent 0,
+        transparent 25%,
+        #1989fa 0,
+        #1989fa 45%,
+        transparent 0,
+        transparent 50%);
+    background: repeating-linear-gradient(-45deg,
+        #ff6c6c 0,
+        #ff6c6c 20%,
+        transparent 0,
+        transparent 25%,
+        #1989fa 0,
+        #1989fa 45%,
+        transparent 0,
+        transparent 50%);
     background-size: 80px;
     content: '';
   }
@@ -468,6 +492,7 @@ watchEffect(() => {
 .mb10 {
   margin-bottom: 10px;
 }
+
 .mt10 {
   margin-top: 10px;
 }
@@ -511,6 +536,7 @@ watchEffect(() => {
       text-overflow: ellipsis;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+      margin-top: 10px;
     }
 
     &-desc {
@@ -522,6 +548,8 @@ watchEffect(() => {
 
     &-price {
       color: var(--color-text-1);
+      margin-bottom: 10px;
+
       &-symbol {
         font-size: 12px;
         margin-right: 2px;
@@ -587,6 +615,7 @@ watchEffect(() => {
 
   &-price {
     color: var(--color-primary);
+
     &-symbol {
       font-size: 12px;
       margin-right: 2px;
@@ -601,9 +630,11 @@ watchEffect(() => {
 
 .cell {
   font-size: 14px;
+
   .van-cell__title {
     color: var(--color-text-3);
   }
+
   .van-cell__value {
     color: var(--color-text-1);
   }
@@ -619,6 +650,7 @@ watchEffect(() => {
     margin-right: 10px;
     color: var(--color-text-3);
   }
+
   &-bd {
     flex: 1;
     margin-left: 10px;
@@ -714,6 +746,13 @@ watchEffect(() => {
 
     &:not(:last-child) {
       margin-right: 12px;
+    }
+
+    &-small {
+      height: 24px;
+      font-size: 12px;
+      margin-left: 14px;
+      padding: 0 8px;
     }
   }
 }

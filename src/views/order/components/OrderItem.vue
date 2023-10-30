@@ -8,7 +8,7 @@ import { decimalFormat } from '@/utils/format';
 import { useOrderStore } from '@/store/modules/order';
 
 defineProps({
-  item: { type: Object as PropType<Recordable>, default: () => {} },
+  item: { type: Object as PropType<Recordable>, default: () => { } },
   index: { type: Number, default: 0 },
 });
 const emit = defineEmits(['delete']);
@@ -16,17 +16,19 @@ const router = useRouter();
 const orderStore = useOrderStore();
 
 function onOrderClicked(item: Recordable) {
-  const { orderNumber } = item;
+
+  const { outTradeNo } = item;
+  console.log(outTradeNo)
   router.push({
     path: '/order/detail',
     query: {
-      orderNumber,
+      outTradeNo,
     },
   });
 }
 
 function onConcatService(_item: Recordable) {
-  showToast('未开放：客服');
+  showToast({ message: '请拨打商家电话：88888888', duration: 5000 });
 }
 
 function onOrderCancel(item: Recordable) {
@@ -59,7 +61,7 @@ function onOrderDelete(item: Recordable, index: number) {
   <div class="list-item">
     <div class="list-item-header van-hairline--bottom">
       <div class="list-item-header-hd">
-        <span class="title">订单编号：{{ item.orderNumber }}</span>
+        <span class="title">订单编号：{{ item.outTradeNo }}</span>
       </div>
       <div :class="['list-item-header-state', item.status !== -1 ? 'text-primary-color' : '']">
         {{ item.statusStr }}
@@ -67,48 +69,43 @@ function onOrderDelete(item: Recordable, index: number) {
     </div>
     <div class="list-item-body" @click="onOrderClicked(item)">
       <div v-if="item.goodsInfo" class="good-card">
-        <van-image fit="contain" class="good-card-pic" :src="item.goodsInfo.pic" />
+        <van-image fit="contain" class="good-card-pic" :src="item.orderItemVOList[0].servicePic" />
         <div class="good-card-content">
           <div class="good-card-content-hd">
-            <div class="good-card-title">{{ item.goodsInfo.goodsName }}</div>
+            <div class="good-card-title">{{ item.orderItemVOList[0].serviceName }} - {{
+              item.orderItemVOList[0].productName }}</div>
             <div v-if="item.goodsInfo.property" class="good-card-prop">{{ item.goodsInfo.property }}</div>
           </div>
           <div class="good-card-content-bd">
-            <div class="good-card-price">¥{{ decimalFormat(item.goodsInfo.amount) }}</div>
-            <div class="good-card-number">x{{ item.goodsInfo.number }}</div>
+            <div class="good-card-price">¥{{ decimalFormat(item.totalAmount) }}</div>
+            <!-- <div class="good-card-number">x{{ item.goodsInfo.number }}</div> -->
           </div>
         </div>
       </div>
-      <div v-if="item.goodsNumber > 1" class="list-item-more">查看全部{{ item.goodsNumber }}件商品</div>
+      <!-- <div v-if="item.goodsNumber > 1" class="list-item-more">查看全部{{ item.goodsNumber }}件商品</div> -->
       <div class="list-item-total van-hairline--top">
-        <span class="list-item-total-number">共{{ item.goodsNumber }}件商品</span>
+        <!-- <span class="list-item-total-number">共{{ item.goodsNumber }}件商品</span> -->
         <div class="list-item-total-price">
-          <span class="list-item-total-price-label"> {{ item.status === 0 ? '需付款：' : '实付款：' }}</span>
-          <Price :price="item.amountReal" />
+          <span class="list-item-total-price-label"> {{ item.state === 'NEW' ? '需付款：' : '实付款：' }}</span>
+          <Price :price="item.payAmount" />
         </div>
       </div>
     </div>
     <!-- ▼ 操作按钮组（一行最好不要超过3个） -->
     <div class="list-item-footer van-hairline--top">
-      <template v-if="item.status === -1 || item.status === 3 || item.status === 4">
+      <template v-if="item.state === 'CANCEL' || item.state === 'PAY'">
         <van-button class="list-item-action-btn" round @click.stop="onOrderDelete(item, index)"> 删除订单 </van-button>
       </template>
-      <template v-if="item.status === 0">
+      <template v-if="item.state === 'NEW'">
         <van-button class="list-item-action-btn" round plain @click.stop="onOrderCancel(item)"> 取消订单 </van-button>
         <van-button class="list-item-action-btn" round plain type="primary" @click.stop="onOrderClicked(item)">
           去支付
         </van-button>
       </template>
-      <template v-if="item.status === 1">
+      <template v-if="item.state === 'NEW' || item.state === 'PAY' || item.state === 'CANCEL'">
         <van-button icon="service" class="list-item-action-btn" round @click.stop="onConcatService(item)">
           联系客服
         </van-button>
-      </template>
-      <template v-if="item.status === 2">
-        <van-button class="list-item-action-btn" round @click.stop="onOrderClicked(item)">确认收货</van-button>
-      </template>
-      <template v-if="item.status === 3">
-        <van-button class="list-item-action-btn" round @click.stop="onOrderClicked(item)">评价</van-button>
       </template>
     </div>
     <!-- ▲ 操作按钮组 -->
@@ -200,6 +197,7 @@ function onOrderDelete(item: Recordable, index: number) {
   box-sizing: border-box;
   padding: 12px 12px 10px;
   display: flex;
+  align-items: center;
 
   &-pic {
     width: 72px;
@@ -217,6 +215,7 @@ function onOrderDelete(item: Recordable, index: number) {
       flex: 1;
       margin-right: 12px;
     }
+
     &-bd {
       text-align: right;
     }

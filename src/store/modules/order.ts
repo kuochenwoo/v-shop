@@ -68,7 +68,7 @@ export const useOrderStore = defineStore({
       await showConfirmDialog({
         title: '确定删除订单？',
         message: '删除订单后无法恢复，无法处理您的售后问题，请慎重考虑。',
-        cancelButtonText: '在考虑下',
+        cancelButtonText: '再考虑下',
         confirmButtonText: '删除',
       });
 
@@ -90,7 +90,7 @@ export const useOrderStore = defineStore({
       await showConfirmDialog({
         title: '确定取消订单？',
         message: '订单还未付款,确定要取消吗？',
-        cancelButtonText: '在考虑下',
+        cancelButtonText: '再考虑下',
         confirmButtonText: '取消订单',
       });
 

@@ -59,8 +59,10 @@ export function orderDelivery(data?: Recordable) {
  * 订单详情
  */
 export function orderDetail(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/order/detail`,
+    // url: `/order/detail`,
+    url: `http://${host}:7073/api/order/v1/detail`,
     method: 'get',
     params: data,
   });
@@ -70,8 +72,10 @@ export function orderDetail(data?: Recordable) {
  * 订单列表
  */
 export function orderList(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/order/list`,
+    // url: `/order/list`,
+    url: `http://${host}:7073/api/order/v1/page_order`,
     method: 'post',
     data,
   });
