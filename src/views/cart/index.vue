@@ -39,10 +39,6 @@ const listLoading = ref(true);
 const listEmptyImage = IMAGE_LIST_EMPTY;
 const cartVideoSrc = ICON_SHOPPING_CART;
 
-function propTitle(list: Recordable[]) {
-  return list.map((v) => v.optionValueName).join(',');
-}
-
 const selectedList = computed(() => {
   return unref(list).filter((v) => v.selected);
 });
@@ -55,16 +51,16 @@ const totalPrice = computed(() => {
   return unref(selectedList).reduce((acc, cur) => NP.plus(acc, NP.times(cur.price, cur.number)), 0);
 });
 
-const selectedAll = computed({
-  get() {
-    return unref(selectedList).length === unref(list).length;
-  },
-  set(val) {
-    unref(list).forEach((v) => {
-      v.selected = val;
-    });
-  },
-});
+// const selectedAll = computed({
+//   get() {
+//     return unref(selectedList).length === unref(list).length;
+//   },
+//   set(val) {
+//     unref(list).forEach((v) => {
+//       v.selected = val;
+//     });
+//   },
+// });
 
 function getList() {
   listLoading.value = true;
@@ -86,24 +82,25 @@ const onGoodChange = useDebounceFn((number, index) => {
 function onDelete() {
   if (!unref(selectedList).length) {
     showToast({
-      message: '您还没有选择商品哦',
+      message: '您还没有选择服务哦',
       duration: 1500,
     });
     return;
   }
 
-  const type = unref(selectedList).length === unref(list).length ? 'empty' : 'remove';
-  const message = type === 'empty' ? `确定要清空购物车吗？` : `确定要删除这${unref(selectedList).length}个商品吗？`;
+  // const type = unref(selectedList).length === unref(list).length ? 'empty' : 'remove';
+  // const message = type === 'empty' ? `确定要清空购物车吗？` : `确定要删除这${unref(selectedList).length}个预约吗？`;
+  const message = `确定要删除这${unref(selectedList).length}个预约吗？`;
 
   showConfirmDialog({
     message: message,
   })
     .then(() => {
-      if (type === 'empty') {
-        cartEmptyHandle();
-      } else {
-        cartRemoveHandle();
-      }
+      // if (type === 'empty') {
+      //   cartEmptyHandle();
+      // } else {
+      cartRemoveHandle();
+      // }
     })
     .catch((err) => {
       console.log(err);
@@ -127,21 +124,22 @@ function cartNumberHandle(_index: number, { key, number }) {
     });
 }
 
-function cartEmptyHandle() {
-  API_CART.shoppingCartEmpty()
-    .then(() => {
-      list.value = [];
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
+// function cartEmptyHandle() {
+//   API_CART.shoppingCartEmpty()
+//     .then(() => {
+//       list.value = [];
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// }
 
 function cartRemoveHandle() {
   const keyStr = unref(selectedList)
-    .map((v) => v.key)
+    .map((v) => v.serviceId)
     .join(',');
-  API_CART.shoppingCartRemove({ key: keyStr })
+
+  API_CART.shoppingCartRemove({ serviceId: keyStr })
     .then((res) => {
       list.value = res.data?.items ?? [];
     })
@@ -153,7 +151,7 @@ function cartRemoveHandle() {
 function onSubmit() {
   if (!unref(selectedList).length) {
     showToast({
-      message: '您还没有选择商品哦',
+      message: '您还没有选择技师哦',
       duration: 1500,
     });
     return;
@@ -189,20 +187,26 @@ function onSubmit() {
             </div>
           </div>
           <div class="list">
-            <div v-for="(item, index) in list" :key="item.key" class="list-item">
+            <div v-for="(item, index) in list" :key="item.serviceId" class="list-item">
               <div class="list-item-selected">
                 <van-checkbox v-model="item.selected"></van-checkbox>
               </div>
-              <van-image fit="contain" class="list-item-pic" :src="item.pic" />
+              <van-image fit="contain" class="list-item-pic" :src="item.servicePic" />
               <div class="list-item-content">
                 <div class="list-item-title">
-                  <span v-if="item.status === 1" style="color: var(--color-text-4)">【失效】</span>
+                  <span v-if="item.status === 0" style="color: var(--color-text-4)">!!!--失效--!!!</span>
                   {{ item.name }}
                 </div>
-                <div class="list-item-desc">
-                  <div v-if="item.sku && item.sku.length" class="list-item-prop">{{ propTitle(item.sku) }}</div>
-                </div>
                 <div class="list-item-bottom">
+                  <div class="list-item-bottom-detail">
+                    <div class="list-item-bottom-detail-service">
+                      {{ item.serviceName }}
+                    </div>
+                    <div class="list-item-bottom-detail-product">
+                      {{ item.productName }}
+                    </div>
+                  </div>
+
                   <div class="list-item-price">
                     <span class="list-item-price-symbol">¥</span>
                     <span class="list-item-price-integer">{{ decimalFormat(item.price) }}</span>
@@ -219,8 +223,7 @@ function onSubmit() {
       </template>
       <van-empty v-else class="empty" :image="listEmptyImage">
         <template v-if="hasLogin">
-          <div class="empty-title">购物车快饿瘪了 T.T</div>
-          <div class="empty-txt">快给我挑点宝贝</div>
+          <div class="empty-title">您还没选择服务</div>
           <van-button class="empty-btn" round plain type="primary" @click="goHome">去逛逛</van-button>
         </template>
         <template v-else>
@@ -232,7 +235,7 @@ function onSubmit() {
     <!--结算栏 -->
     <div class="submit-bar-wrap">
       <div v-if="list.length" class="submit-bar">
-        <van-checkbox v-model="selectedAll">全选</van-checkbox>
+        <!-- <van-checkbox v-model="selectedAll">全选</van-checkbox> -->
         <template v-if="editStatus === 2">
           <div class="submit-bar-hd"></div>
           <van-button class="submit-bar-button" round plain @click="onDelete">删除</van-button>
@@ -339,6 +342,17 @@ function onSubmit() {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-top: 15px;
+
+      &-detail {
+        &-service {
+          font-size: 12px;
+        }
+
+        &-product {
+          font-size: 12px;
+        }
+      }
     }
 
     &-title {

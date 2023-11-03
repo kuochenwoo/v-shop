@@ -5,18 +5,41 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref, reactive, watchEffect } from 'vue';
+import { ref, reactive, watchEffect, onMounted, unref } from 'vue';
+import { Popup as VanPopup } from 'vant';
 import { useRouter } from 'vue-router';
 import API_GOODS from '@/apis/goods';
 import API_BANNER from '@/apis/banner';
 import Coupons from '@/views/good/components/Coupons.vue';
 import IMAGE_LIST_EMPTY from '@/assets/images/empty/good.png';
 import { usePage } from '@/hooks/shared/usePage';
+import { showToast } from 'vant';
+import API_CART from '@/apis/cart';
+import { shoppingCartAddParams } from '@/apis/cart/types';
+
+onMounted(() => {
+  if (unref(hasLogin)) {
+    getGoodList().then((res) => {
+      product_list.value = res.data.result || [];
+    });
+  }
+});
+
 const { hasLogin, goLogin } = usePage();
 const bannerList = ref<Recordable[]>([]);
+
 const router = useRouter();
 
 const listEmptyImage = IMAGE_LIST_EMPTY;
+const product_list = ref<Recordable[]>([]);
+const product_list_ref = ref<any>(null);
+// const listRef = ref<any>(null);
+// const list = ref<Recordable[]>([]);
+const checked = ref('1');
+let selectedProductId = null;
+let selectedServiceId = null;
+
+const show = ref(false);
 
 function getBannerList() {
   API_BANNER.bannerList({ type: 'indexBanner' }).then((res) => {
@@ -28,6 +51,15 @@ function onBannerClicked(linkUrl: string) {
   if (linkUrl) {
     window.location.href = linkUrl;
   }
+}
+
+function getGoodList() {
+  const params = {
+    page: pagination.pageCurrent,
+    pageSize: pagination.pageSize,
+  };
+  // 参数由form-data传入
+  return API_GOODS.goodsList(params);
 }
 
 function formatTime(itemTime) {
@@ -93,8 +125,23 @@ function getProductList() {
   return API_GOODS.productList(params);
 }
 
-function onGoodClicked(id: number) {
-  router.push({ path: '/good/detail', query: { id } });
+function toggle(value: boolean) {
+  show.value = value;
+}
+
+const onServiceClick = (id) => {
+  selectedServiceId = id; // 保存选中项的 id
+};
+
+function onProductClicked(id) {
+  // router.push({ path: '/good/detail', query: { id } });
+  // getGoodList().then((res) => {
+  //   product_list.value = res.data.result || [];
+  // });
+
+  // product_list = product_list.value
+  toggle(true);
+  selectedProductId = id;
 }
 
 watchEffect(() => {
@@ -105,6 +152,33 @@ watchEffect(() => {
     listRef.value?.loadData();
   }
 });
+
+function onTaskSubmit() {
+  if (selectedProductId === null) {
+    showToast("请先选择技师");
+    return;
+  }
+  if (selectedServiceId === null) {
+    showToast("请先选择服务");
+    return;
+  }
+  const params: shoppingCartAddParams = {
+    productId: selectedProductId,
+    serviceId: selectedServiceId
+  };
+
+  API_CART.shoppingCartAdd(params)
+    .then(() => {
+      showToast('已成功加入购物车');
+    })
+    .then(() => {
+      router.push({ path: '/cart' });
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+
+}
 
 </script>
 
@@ -151,11 +225,10 @@ watchEffect(() => {
                     <div class="list-item-review">
                       <Coupons title="查看评价" />
                     </div>
-                    <van-button type="primary" plain class="buy-btn" @click="onGoodClicked(item.id)">立即预约</van-button>
+                    <van-button type="primary" plain class="buy-btn" @click="onProductClicked(item.id)">立即预约</van-button>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </ProList>
@@ -163,6 +236,37 @@ watchEffect(() => {
       <!-- 底部导航栏 -->
       <Tabbar />
     </div>
+    <!-- 弹出层要放在最外面 -->
+    <van-popup v-model:show="show" closeable position="bottom" :style="{ height: '30%' }">
+      <div class="coupons-header van-hairline--bottom">选择服务项目</div>
+      <div class="popup-list">
+        <van-list ref="product_list_ref" v-model:dataSource="product_list" mode="infinite">
+          <van-radio-group v-model="checked">
+            <div v-for="item in product_list" :key="item.id">
+              <van-radio :name="item.id" margin-bottom="10px" margin-top="10px" shape="dot" icon-size="15px"
+                @click="onServiceClick(item.id)">
+                <div class="bbb">
+                  <div class="bbb-l">
+                    {{ item.name }}
+                  </div>
+                  <div class="bbb-m">
+                    {{ item.originalPrice }}
+                  </div>
+                  <div class="bbb-r">
+                    {{ item.minPrice }}
+                  </div>
+                </div>
+              </van-radio>
+            </div>
+            <div class="popup-button-bottom">
+              <van-button type="primary" round block @click="onTaskSubmit">马上预约</van-button>
+            </div>
+          </van-radio-group>
+        </van-list>
+      </div>
+
+    </van-popup>
+
   </template>
   <van-empty v-else class="empty" :image="listEmptyImage">
     <!-- <template> -->
@@ -175,6 +279,66 @@ watchEffect(() => {
 
 
 <style lang="less" scoped>
+.bbb {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &-l {
+    // display: flex;
+    font-weight: bold;
+    flex: 5;
+    /* Equal distribution of space among the elements */
+    padding-left: 5px;
+    /* Add padding for spacing if necessary */
+  }
+
+  &-r {
+    // display: flex;
+    color: red;
+    font-style: italic;
+    flex: 2;
+    /* Equal distribution of space among the elements */
+    padding-left: 20px;
+    /* Add padding for spacing if necessary */
+  }
+
+  &-m {
+    font-size: small;
+    text-decoration: line-through;
+    color: grey;
+    flex: 2;
+    /* Equal distribution of space among the elements */
+    padding-left: 20px;
+    /* Add padding for spacing if necessary */
+  }
+}
+
+.popup {
+  &-list {
+    background: var(--color-bg-2);
+
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: 3%;
+    margin-top: 2%;
+
+    &-item {
+      margin-bottom: 10px;
+    }
+  }
+
+  &-button {
+    &-bottom {
+      position: absolute;
+      bottom: 10px;
+      left: 5px;
+      right: 5px;
+    }
+  }
+}
+
 .swiper {
   width: 100%;
   height: 180px;
@@ -295,8 +459,6 @@ watchEffect(() => {
       align-items: flex-start;
       justify-content: left;
       color: darkgoldenrod;
-
-      &-more {}
     }
 
     &-sold {
@@ -419,8 +581,6 @@ watchEffect(() => {
       flex: 1;
     }
 
-    &-stars {}
-
     &-tag {
       padding: 2px 10px;
       border-radius: 10px;
@@ -443,6 +603,21 @@ watchEffect(() => {
       margin-top: 5px;
       font-size: 12px;
     }
+  }
+}
+
+.coupons {
+  height: 20px;
+
+  &-header {
+    box-sizing: border-box;
+    text-align: center;
+    padding: 0 15px;
+    width: 100%;
+    font-size: 15px;
+    color: var(--color-text-1);
+    height: 40px;
+    line-height: 40px;
   }
 }
 </style>

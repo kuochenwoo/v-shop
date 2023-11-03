@@ -10,15 +10,16 @@ import { useRoute, useRouter } from 'vue-router';
 import { showConfirmDialog, showToast } from 'vant';
 import API_GOODS from '@/apis/goods';
 import API_CART from '@/apis/cart';
-import { shoppingCartAddParams } from '@/apis/cart/types';
+import { makePhoneCall } from '@/utils/web/makePhoneCall';
+// import { shoppingCartAddParams } from '@/apis/cart/types';
 import { ISku, IInitialSku } from '@/components/Sku/types';
 // import Coupons from './components/Coupons.vue';
 import Reputations from './components/Reputations.vue';
 import { decimalFormat, priceIntegerFormat } from '@/utils/format';
-import { debounce } from '@/utils';
+// import { debounce } from '@/utils';
 // import { getAfterSaleTitle } from '@/model/modules/order/afterSale';
 
-import { useOrderStore } from '@/store/modules/order';
+// import { useOrderStore } from '@/store/modules/order';
 import { usePage } from '@/hooks/shared/usePage';
 
 onMounted(() => {
@@ -31,7 +32,7 @@ onMounted(() => {
 
 const route = useRoute();
 const router = useRouter();
-const orderStore = useOrderStore();
+// const orderStore = useOrderStore();
 const { hasLogin } = usePage();
 
 const picList = ref<Recordable[]>([]);
@@ -129,27 +130,27 @@ function onSkuShow(type: string) {
   skuShow.value = true;
 }
 
-const onSkuConfirm = debounce((data) => {
-  skuShow.value = false;
-  if (unref(skuNextActionType) === 'addCart') {
-    addCartHandle();
-  } else {
-    orderStore.setTradeGoods({
-      origin: 'buy',
-      list: [
-        {
-          goodsId: unref(sku).goodsId,
-          name: unref(sku).goodInfo.name,
-          number: unref(initialSku).selectedNum,
-          pic: unref(sku).goodInfo.pic,
-          price: data.selectedSkuComb.price,
-          // logisticsId: unref(basicInfo).logisticsId,
-          // propertyList: unref(initialSku).selectedPropList,
-        },
-      ],
-    });
-  }
-}, 1500);
+// const onSkuConfirm = debounce((data) => {
+//   skuShow.value = false;
+//   if (unref(skuNextActionType) === 'addCart') {
+//     addCartHandle();
+//   } else {
+//     orderStore.setTradeGoods({
+//       origin: 'buy',
+//       list: [
+//         {
+//           goodsId: unref(sku).goodsId,
+//           name: unref(sku).goodInfo.name,
+//           number: unref(initialSku).selectedNum,
+//           pic: unref(sku).goodInfo.pic,
+//           price: data.selectedSkuComb.price,
+//           // logisticsId: unref(basicInfo).logisticsId,
+//           // propertyList: unref(initialSku).selectedPropList,
+//         },
+//       ],
+//     });
+//   }
+// }, 1500);
 
 // function getSkuData(basicInfo: Recordable, properties: Recordable[], skuList: Recordable[]) {
 //   sku.value = {
@@ -168,7 +169,14 @@ const onSkuConfirm = debounce((data) => {
 // }
 
 function onConcatService() {
-  showToast('未开放：客服');
+  makePhoneCall({
+    phoneNumber: '88881234', // 模拟打电话
+  });
+}
+
+function onBookClicked() {
+  // 否则，执行跳转到预约页面的逻辑
+  router.push({ path: '/category' });
 }
 
 // 售后服务
@@ -185,30 +193,30 @@ function getCartCount() {
   });
 }
 
-function addCartHandle() {
-  const params: shoppingCartAddParams = {
-    goodsId: unref(sku).goodsId,
-    number: unref(initialSku).selectedNum,
-  };
+// function addCartHandle() {
+//   const params: shoppingCartAddParams = {
+//     goodsId: unref(sku).goodsId,
+//     number: unref(initialSku).selectedNum,
+//   };
 
-  if (unref(initialSku).selectedPropList.length) {
-    params.sku = JSON.stringify(
-      unref(initialSku).selectedPropList.map((v: Recordable) => ({
-        optionId: v.id,
-        optionValueId: v.childId,
-      })),
-    );
-  }
+//   if (unref(initialSku).selectedPropList.length) {
+//     params.sku = JSON.stringify(
+//       unref(initialSku).selectedPropList.map((v: Recordable) => ({
+//         optionId: v.id,
+//         optionValueId: v.childId,
+//       })),
+//     );
+//   }
 
-  API_CART.shoppingCartAdd(params)
-    .then(() => {
-      showToast('已成功加入购物车');
-      getCartCount();
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-}
+//   API_CART.shoppingCartAdd(params)
+//     .then(() => {
+//       showToast('已成功加入购物车');
+//       getCartCount();
+//     })
+//     .catch((err) => {
+//       console.error(err);
+//     });
+// }
 </script>
 
 <template>
@@ -274,11 +282,12 @@ function addCartHandle() {
       <van-action-bar-icon icon="thumb-circle-o" text="首页" to="/home" replace />
       <van-action-bar-icon icon="chat-o" text="客服" @click="onConcatService" />
       <van-action-bar-icon icon="cart-o" text="购物车" to="/cart" :badge="cartCount" replace />
-      <van-action-bar-button type="warning" text="加入购物车" @click="onSkuShow('addCart')" />
-      <van-action-bar-button type="danger" text="立即购买" @click="onSkuShow" />
+      <!-- <van-action-bar-button type="danger" text="立即购买" @click="onBookClicked" />-->
+      <!-- <van-action-bar-button type="warning" text="加入购物车" @click="onSkuShow('addCart')" /> -->
+      <van-button square type="primary" class="aaa" @click="onBookClicked">立即预约</van-button>
     </van-action-bar>
     <!-- SKU 弹窗 -->
-    <Sku v-model:show="skuShow" :sku="sku" :initial-sku="initialSku" @confirm="onSkuConfirm" />
+    <!-- <Sku v-model:show="skuShow" :sku="sku" :initial-sku="initialSku" @confirm="onSkuConfirm" /> -->
   </div>
 </template>
 
@@ -300,6 +309,12 @@ function addCartHandle() {
     width: 100%;
     height: 100%;
   }
+}
+
+.aaa {
+  width: 50%;
+  margin-left: 30px;
+  height: 70%;
 }
 
 .price {

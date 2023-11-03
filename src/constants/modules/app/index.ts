@@ -92,7 +92,7 @@ export const tabBar = {
       activeIcon: 'apps-o',
     },
     {
-      text: '订单',
+      text: '购物车',
       pagePath: '/cart',
       icon: 'shopping-cart-o',
       activeIcon: 'shopping-cart',

@@ -6,8 +6,10 @@ import { shoppingCartAddParams, shoppingCartResult } from './types';
  * 加入购物车
  */
 export function shoppingCartAdd(data: shoppingCartAddParams) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request<ServiceResult<shoppingCartResult>>({
-    url: `/shopping-cart/add`,
+    // url: `/shopping-cart/add`,
+    url: `http://${host}:7072/api/product/v1/cart/add`,
     method: 'post',
     data,
   });
@@ -28,8 +30,10 @@ export function shoppingCartEmpty(data?: Recordable) {
  * 读取购物车数据
  */
 export function shoppingCartInfo(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request<ServiceResult<shoppingCartResult>>({
-    url: `/shopping-cart/info`,
+    // url: `/shopping-cart/info`,
+    url: `http://${host}:7072/api/product/v1/cart/info`,
     method: 'get',
     params: data,
   });
@@ -50,8 +54,10 @@ export function shoppingCartModifyNumber(data?: Recordable) {
  * 移除购物车中某条记录
  */
 export function shoppingCartRemove(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request<ServiceResult<shoppingCartResult>>({
-    url: `/shopping-cart/remove`,
+    // url: `/shopping-cart/remove`,
+    url: `http://${host}:7072/api/product/v1/cart/delete`,
     method: 'post',
     data,
   });
