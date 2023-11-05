@@ -5,8 +5,10 @@ import { ContentTypeEnum } from '@/utils/request/types';
  * 查看用户资产
  */
 export function userAmount(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/user/amount`,
+    // url: `/user/amount`,
+    url: `http://${host}:7071/api/user/v1/amount`,
     method: 'get',
     params: data,
   });
@@ -132,8 +134,10 @@ export function userModifyPwd(data?: Recordable) {
  * 添加收货地址
  */
 export function userShoppingAddressAdd(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/user/shipping-address/add`,
+    url: `http://${host}:7071/api/address/v1/add`,
+    // url: `/user/shipping-address/add`,
     method: 'post',
     data,
   });
@@ -143,8 +147,9 @@ export function userShoppingAddressAdd(data?: Recordable) {
  * 获取默认收货地址
  */
 export function userShoppingAddressDefault(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/user/shipping-address/default/v2`,
+    url: `http://${host}:7071/api/address/v1/default`,
     method: 'get',
     params: data,
   });
@@ -154,8 +159,9 @@ export function userShoppingAddressDefault(data?: Recordable) {
  * 删除收货地址
  */
 export function userShoppingAddressDelete(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/user/shipping-address/delete`,
+    url: `http://${host}:7071/api/address/v1/del`,
     method: 'post',
     data,
   });
@@ -165,8 +171,10 @@ export function userShoppingAddressDelete(data?: Recordable) {
  * 收货地址详情
  */
 export function userShoppingAddressDetail(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/user/shipping-address/detail/v2`,
+    // url: `/user/shipping-address/detail/v2`,
+    url: `http://${host}:7071/api/address/v1/find`,
     method: 'get',
     params: data,
   });
@@ -176,9 +184,11 @@ export function userShoppingAddressDetail(data?: Recordable) {
  * 收货地址列表
  */
 export function userShoppingAddressList(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/user/shipping-address/list/v2`,
-    method: 'post',
+    // url: `/user/shipping-address/list/v2`,
+    url: `http://${host}:7071/api/address/v1/list`,
+    method: 'get',
     data,
   });
 }
@@ -187,8 +197,10 @@ export function userShoppingAddressList(data?: Recordable) {
  * 修改收货地址
  */
 export function userShoppingAddressUpdate(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/user/shipping-address/update`,
+    // url: `/user/shipping-address/update`,
+    url: `http://${host}:7071/api/address/v1/update`,
     method: 'post',
     data,
   });

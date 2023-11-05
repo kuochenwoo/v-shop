@@ -28,21 +28,12 @@ export const useOrderStore = defineStore({
       if (origin === 'cart') {
         list.forEach((v: any) => {
           goodList.push({
-            goodsId: v.goodsId,
-            name: v.name,
+            goodsId: v.serviceId,
+            name: v.serviceName,
             number: v.number,
-            pic: v.pic,
+            pic: v.servicePic,
             price: v.price,
-            logisticsId: v.logisticsId,
-            propertyList: v.sku?.length
-              ? v.sku.map((v: any) => ({
-                  id: v.optionId,
-                  name: v.optionName,
-                  childId: v.optionValueId,
-                  childName: v.optionValueName,
-                  propIds: `${v.optionId}:${v.optionValueId}`,
-                }))
-              : [],
+            productName: v.productName,
           });
         });
       } else {
@@ -115,8 +106,7 @@ export interface ITradeGoodItem {
   number: number;
   pic: string;
   price: number;
-  logisticsId: number;
-  propertyList: Array<any>;
+  productName: string;
 }
 export interface ITradeGoods {
   origin: string;

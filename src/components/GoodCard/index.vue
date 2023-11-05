@@ -26,7 +26,15 @@ export default defineComponent({
   <div class="good-card">
     <van-image fit="contain" class="good-card-pic" :src="good.pic" />
     <div class="good-card-content">
-      <div class="good-card-title">{{ good.name }}</div>
+      <div class="good-card-content-detail">
+        <div class=" good-card-title">
+          {{ good.name }}
+        </div>
+        <div>
+          {{ good.productName }}
+        </div>
+      </div>
+
       <div class="good-card-desc">
         <div v-if="good.propertyList && good.propertyList.length" class="good-card-prop">
           {{ propTitle(good.propertyList) }}
@@ -73,24 +81,31 @@ export default defineComponent({
       flex: 1;
       display: flex;
       flex-direction: column;
+
+      &-detail {
+        margin-top: 10px;
+        font-size: 12px;
+      }
     }
 
     &-bottom {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: 10px;
+      font-weight: bold;
     }
 
-    &-title {
-      font-size: 14px;
-      line-height: 16px;
-      color: var(--color-text-1);
-      display: -webkit-box;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-    }
+    // &-title {
+    //   font-size: 14px;
+    //   line-height: 16px;
+    //   color: var(--color-text-1);
+    //   display: -webkit-box;
+    //   overflow: hidden;
+    //   text-overflow: ellipsis;
+    //   -webkit-line-clamp: 2;
+    //   -webkit-box-orient: vertical;
+    // }
 
     &-desc {
       flex: 1;
@@ -101,6 +116,7 @@ export default defineComponent({
 
     &-price {
       color: var(--color-text-1);
+
       &-symbol {
         font-size: 12px;
         margin-right: 2px;

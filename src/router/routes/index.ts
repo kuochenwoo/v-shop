@@ -36,6 +36,7 @@ const routes = [
     meta: {
       title: '我的',
       showWindowBar: true,
+      keepAlive: false
     },
   },
   {

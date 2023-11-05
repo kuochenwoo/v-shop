@@ -39,12 +39,11 @@ function onDetail(index: number) {
   });
 }
 // eslint-disable-next-line max-params
-function formatAddress(provinceStr: string, cityStr: string, areaStr: string, address: string) {
+function formatAddress(provinceStr: string, cityStr: string, areaStr: string) {
   let str = provinceStr;
 
   cityStr.length > 1 && (str += cityStr);
   areaStr.length > 1 && (str += areaStr);
-  address && (str += ` ${address}`);
 
   return str;
 }
@@ -69,11 +68,14 @@ function onItemClicked(index: number) {
           <span v-if="item.isDefault" class="list-item-tag">默认</span>
         </div>
         <div class="list-item-address">
-          {{ formatAddress(item.provinceStr, item.cityStr, item.areaStr, item.address) }}
+          {{ formatAddress(item.province, item.city, item.district) }}
+        </div>
+        <div class="list-item-address-detail">
+          {{ item.addressDetail }}
         </div>
       </div>
       <div class="list-item-ft" @click.stop="onDetail(index)">
-        <van-icon name="edit" />
+        <van-icon name="edit" size="20px" color="red" />
       </div>
     </div>
   </div>
@@ -119,6 +121,8 @@ function onItemClicked(index: number) {
     color: var(--color-text-1);
     font-size: 13px;
     line-height: 18px;
+
+    &-detail {}
   }
 
   &-bd {

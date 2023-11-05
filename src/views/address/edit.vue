@@ -4,15 +4,8 @@
       <van-field v-model="form.name" label="收货人" placeholder="收货人姓名" clearable />
       <van-field v-model="form.mobile" type="tel" label="手机号码" placeholder="收货人手机号" clearable />
       <AreaField :model-value="form.areaStr" :code="areaCode" @change="onAreaChange" />
-      <van-field
-        v-model="form.address"
-        label="详细地址"
-        placeholder="街道门牌、楼层房间号等信息"
-        rows="1"
-        autosize
-        type="textarea"
-        clearable
-      />
+      <van-field v-model="form.address" label="详细地址" placeholder="街道门牌、楼层房间号等信息" rows="1" autosize type="textarea"
+        clearable />
     </div>
     <div class="group">
       <van-cell center title="设为默认收货地址">
@@ -69,34 +62,32 @@ export default {
       API_USER.userShoppingAddressDetail({
         id: this.$route.query.id,
       }).then((res) => {
-        const info = res.data.info;
+        const info = res.data;
         this.form = {
           id: info.id,
-          name: info.linkMan,
-          mobile: info.mobile,
-          address: info.address,
-          isDefault: info.isDefault,
-          provinceCode: info.provinceId,
-          cityCode: info.cityId,
-          countyCode: info.districtId,
-          areaStr: this.formatAreaStr(info.provinceStr, info.cityStr, info.areaStr),
+          name: info.receiverName,
+          mobile: info.receiverMobile,
+          address: info.addressDetail,
+          isDefault: info.isDefault == 1 ? true : false,
+          provinceCode: info.province,
+          cityCode: info.city,
+          countyCode: info.district,
+          areaStr: this.formatAreaStr(info.province, info.city, info.district),
         };
       });
     }
   },
   methods: {
     onAreaChange({ selectedOptions }) {
-      this.form.provinceCode = selectedOptions[0].value;
-      this.form.cityCode = selectedOptions[1].value;
-      this.form.countyCode = selectedOptions[2].value;
+      this.form.provinceCode = selectedOptions[0].text;
+      this.form.cityCode = selectedOptions[1].text;
+      this.form.countyCode = selectedOptions[2].text;
       this.form.areaStr = this.formatAreaStr(selectedOptions[0].text, selectedOptions[1].text, selectedOptions[2].text);
     },
     formatAreaStr(provinceStr, cityStr, countyStr) {
       let str = provinceStr;
-
       cityStr.length > 1 && cityStr !== provinceStr && (str += ` / ${cityStr}`);
       countyStr.length > 1 && (str += ` / ${countyStr}`);
-
       return str;
     },
     onSubmit() {
@@ -110,7 +101,7 @@ export default {
         return;
       }
 
-      if (isEmpty(this.form.province)) {
+      if (isEmpty(this.form.areaStr)) {
         showToast('所在地不能为空');
         return;
       }
@@ -119,14 +110,15 @@ export default {
         return;
       }
 
+      console.log(this.form)
       const params = {
-        address: this.form.address,
-        linkMan: this.form.name,
-        mobile: this.form.mobile,
-        isDefault: this.form.isDefault,
-        provinceId: this.form.provinceCode,
-        cityId: this.form.cityCode,
-        districtId: this.form.countyCode,
+        address_detail: this.form.address,
+        receiver_name: this.form.name,
+        receiver_mobile: this.form.mobile,
+        is_default: this.form.isDefault ? 1 : 0,
+        province: this.form.provinceCode,
+        city: this.form.cityCode,
+        district: this.form.countyCode,
       };
 
       showLoadingToast({

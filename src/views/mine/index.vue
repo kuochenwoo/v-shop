@@ -13,8 +13,10 @@ import ICON_ART from '@/assets/images/icon_art.png';
 import { showToast } from 'vant';
 import { useUserStore } from '@/store/modules/user';
 import { usePage } from '@/hooks/shared/usePage';
+import { useRouter } from 'vue-router';
 
 onMounted(() => {
+  console.log("hasLogin", hasLogin.value);
   if (unref(hasLogin)) {
     userStore.getUserDetail();
     // getCounts();
@@ -23,6 +25,7 @@ onMounted(() => {
 
 const userStore = useUserStore();
 const { hasLogin, goLogin, goPage } = usePage();
+const router = useRouter();
 
 // 我的订单
 const orderList = ref<Recordable[]>([
@@ -55,12 +58,14 @@ const orderList = ref<Recordable[]>([
 const toolList = ref<Recordable[]>([
   { icon: 'point-gift-o', title: '积分兑换', path: '/integral/exchange' },
   { icon: 'coupon-o', title: '优惠券', path: '/coupon' },
+  { icon: 'location-o', title: '收货地址', path: '/address' },
+  { icon: 'setting-o', title: '设置', path: '/setting' },
   { icon: ICON_ART, title: '主题', path: '/theme' },
 ]);
 
 function onToolClicked(item) {
   console.log(item)
-  if (item.title != '主题') {
+  if (item.title != '主题' && item.title != '收货地址' && item.title != '设置') {
     showToast({
       message: `${item.title}敬请期待`,
       duration: 1000 * 2,
@@ -80,6 +85,12 @@ function onEasterEgg() {
   el.classList.toggle('active');
 }
 
+function onLogout() {
+  userStore.logout().then(() => {
+    router.back();
+  });
+}
+
 // function getCounts() {
 //   API_ORDER.orderStatistics().then((res) => {
 //     const orderCount = res.data;
@@ -95,7 +106,12 @@ function onEasterEgg() {
   <div class="container">
     <div class="header">
       <div v-if="hasLogin" class="header-inner" @click="goPage('/profile')">
-        <div class="header-tag">个人资料</div>
+        <div class="hea">
+          <div class="header-tag">个人资料</div>
+          <div class="header-tag-logout" @click="onLogout">退出登录</div>
+        </div>
+        <!-- <div class="header-tag">个人资料</div>
+        <div class="header-tag" @click="onLogout">退出登录</div> -->
         <van-image class="header-avatar" :src="userInfo.avatarUrl || assets.avatar" alt="" @click.stop="onEasterEgg" />
         <div class="header-info">
           <div class="header-nick van-ellipsis mb10">
@@ -216,6 +232,17 @@ function onEasterEgg() {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 10px 0 0 10px;
     z-index: 20;
+
+    &-logout {
+      position: absolute;
+      right: 0px;
+      margin-top: 20px;
+      font-size: 12px;
+      padding: 2px 8px;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 10px 0 0 10px;
+      z-index: 20;
+    }
 
     &-icon {
       margin-right: 5px;
@@ -343,6 +370,8 @@ function onEasterEgg() {
   }
 }
 
+
+
 .tool {
   &-list {
     box-sizing: border-box;
@@ -353,7 +382,7 @@ function onEasterEgg() {
 
     &-item {
       box-sizing: border-box;
-      width: 25%;
+      width: 20%;
       text-align: center;
       padding: 10px 0;
 
@@ -436,6 +465,8 @@ function onEasterEgg() {
 
   .header-tag {
     background-color: rgba(255, 255, 255, 0.2);
+
+    &-logout {}
   }
 }
 </style>

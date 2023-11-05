@@ -41,7 +41,7 @@ function getList() {
 
   API_USER.userShoppingAddressList()
     .then((res) => {
-      list.value = res.data?.result ?? [];
+      list.value = res.data ?? [];
 
       if (unref(list).length) {
         addressId.value = unref(list)[0].id;
@@ -79,14 +79,8 @@ defineExpose({
   <van-popup :show="modelValue" round closeable position="bottom" :style="popupStyle" @update:show="updateShow">
     <div class="address-header">选择收货地址</div>
     <div class="address-body">
-      <AddressList
-        v-if="list.length"
-        v-model="addressId"
-        class="address-list"
-        switchable
-        :list="list"
-        @select="onSelect"
-      />
+      <AddressList v-if="list.length" v-model="addressId" class="address-list" switchable :list="list"
+        @select="onSelect" />
     </div>
     <div class="address-actions">
       <van-button type="primary" round block @click="onSubmit">新增地址</van-button>

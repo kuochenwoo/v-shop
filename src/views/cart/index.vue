@@ -18,6 +18,7 @@ import { useOrderStore } from '@/store/modules/order';
 import { usePage } from '@/hooks/shared/usePage';
 
 onMounted(() => {
+  console.log("hasLogin", hasLogin.value);
   if (unref(hasLogin)) {
     getList();
   } else {
@@ -157,7 +158,7 @@ function onSubmit() {
     return;
   }
 
-  if (unref(selectedList).some((v) => v.status === 1)) {
+  if (unref(selectedList).some((v) => v.status === 0)) {
     showToast({
       message: '请删除掉失效商品',
       duration: 1500,

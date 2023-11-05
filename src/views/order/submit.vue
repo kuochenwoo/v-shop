@@ -53,7 +53,9 @@ function onAddressSelected(item: Recordable) {
 
 function getAddressInfo() {
   API_USER.userShoppingAddressDefault().then((res) => {
-    addressInfo.value = res.data?.info ?? {};
+    addressInfo.value = res.data ?? {};
+  }).catch((err) => {
+    console.error(err);
   });
 }
 
@@ -62,7 +64,7 @@ const balance = ref<number>(0);
 const balanceSwitch = ref<boolean>(true);
 function getUserAmount() {
   API_USER.userAmount().then((res) => {
-    balance.value = res.data?.balance ?? 0;
+    balance.value = res.data ?? 0;
   });
 }
 
@@ -85,7 +87,8 @@ const totalPrice = computed(() =>
 );
 
 function onSubmit() {
-  if (unref(isNeedLogistics) && !unref(addressInfo).linkMan) {
+  console.log(goodList)
+  if (unref(isNeedLogistics) && !unref(addressInfo).receiverName) {
     showToast({ message: '地址栏不能为空', duration: 1500 });
     return;
   }
@@ -96,7 +99,7 @@ function onSubmit() {
       message: '积分兑换成余额，再来消费',
       confirmButtonText: '我知道了',
     })
-      .then(() => {})
+      .then(() => { })
       .catch(() => {
         // on cancel
       });
@@ -113,7 +116,7 @@ async function createOrder() {
   const goods = unref(goodList).map((item) => ({
     goodsId: item.goodsId,
     number: item.number,
-    propertyChildIds: item.propertyList.map((v) => v.propIds).join(','),
+    // propertyChildIds: item.propertyList.map((v) => v.propIds).join(','),
   }));
 
   const params: Recordable = {
@@ -126,8 +129,8 @@ async function createOrder() {
 
   if (unref(isNeedLogistics)) {
     params.peisongType = 'kd'; // 配送类型，kd 代表快递；zq代表到店自取
-    params.linkMan = unref(addressInfo).linkMan;
-    params.mobile = unref(addressInfo).mobile;
+    params.linkMan = unref(addressInfo).receiverName;
+    params.mobile = unref(addressInfo).receiverMobile;
     params.address = unref(addressInfo).address;
     params.provinceId = unref(addressInfo).provinceId;
     params.cityId = unref(addressInfo).cityId;
@@ -179,7 +182,7 @@ function payOrder(orderId: number) {
  */
 function cartEmptyHandle() {
   API_CART.shoppingCartEmpty()
-    .then(() => {})
+    .then(() => { })
     .catch((err) => {
       console.log(err);
     });
@@ -190,30 +193,25 @@ function cartEmptyHandle() {
   <div class="container">
     <!-- 收货地址 -->
     <div v-if="isNeedLogistics" class="section">
-      <div v-if="addressInfo.linkMan" class="address" @click="onAddressClicked">
+      <div v-if="addressInfo.receiverName" class="address" @click="onAddressClicked">
         <div class="address-sub van-ellipsis">
-          {{ formatAreaStr(addressInfo.provinceStr, addressInfo.cityStr, addressInfo.areaStr) }}
+          {{ formatAreaStr(addressInfo.province, addressInfo.city, addressInfo.district) }}
         </div>
-        <div class="address-title van-ellipsis">{{ addressInfo.address }}</div>
-        <div class="address-sub van-ellipsis">{{ addressInfo.linkMan }} {{ mobileShow(addressInfo.mobile) }}</div>
+        <div class="address-title van-ellipsis">{{ addressInfo.addressDetail }}</div>
+        <div class="address-sub van-ellipsis">{{ addressInfo.receiverName }} {{ mobileShow(addressInfo.receiverMobile) }}
+        </div>
         <van-icon class="address-arrow" name="arrow" />
       </div>
-      <van-cell
-        v-else
-        class="address-card mb10"
-        title="新增收货地址"
-        icon="add-square"
-        is-link
-        @click="onAddressClicked"
-      ></van-cell>
-      <van-cell title="配送方式" value="快递"></van-cell>
+      <van-cell v-else class="address-card mb10" title="新增收货地址" icon="add-square" is-link
+        @click="onAddressClicked"></van-cell>
+      <van-cell title="服务方式" value="上门服务"></van-cell>
       <SelectAddress v-model="addressPopupShow" @select="onAddressSelected" />
     </div>
     <!-- 商品列表 -->
     <div class="section">
       <div class="section-header van-hairline--bottom">
         <van-icon class="section-header-icon" name="shop-o" />
-        <span class="section-header-title">商品列表</span>
+        <span class="section-header-title">服务列表</span>
       </div>
       <div class="list">
         <GoodCard v-for="(item, index) in goodList" :key="index" :good="item" />
@@ -229,15 +227,8 @@ function cartEmptyHandle() {
     </div>
     <!-- 备注 -->
     <div class="section">
-      <van-field
-        v-model="remark"
-        label="买家留言"
-        type="textarea"
-        placeholder="留言建议提前协商（250字以内）"
-        maxlength="250"
-        rows="1"
-        autosize
-      />
+      <van-field v-model="remark" label="买家留言" type="textarea" placeholder="留言建议提前协商（250字以内）" maxlength="250" rows="1"
+        autosize />
     </div>
     <!-- 付款方式 默认钱包支付-->
     <div class="section">
@@ -317,6 +308,7 @@ function cartEmptyHandle() {
 
   &-price {
     color: var(--color-primary);
+
     &-symbol {
       font-size: 12px;
       margin-right: 2px;
@@ -415,28 +407,24 @@ function cartEmptyHandle() {
     bottom: 0;
     left: 0;
     height: 2px;
-    background: -webkit-repeating-linear-gradient(
-      135deg,
-      #ff6c6c 0,
-      #ff6c6c 20%,
-      transparent 0,
-      transparent 25%,
-      #1989fa 0,
-      #1989fa 45%,
-      transparent 0,
-      transparent 50%
-    );
-    background: repeating-linear-gradient(
-      -45deg,
-      #ff6c6c 0,
-      #ff6c6c 20%,
-      transparent 0,
-      transparent 25%,
-      #1989fa 0,
-      #1989fa 45%,
-      transparent 0,
-      transparent 50%
-    );
+    background: -webkit-repeating-linear-gradient(135deg,
+        #ff6c6c 0,
+        #ff6c6c 20%,
+        transparent 0,
+        transparent 25%,
+        #1989fa 0,
+        #1989fa 45%,
+        transparent 0,
+        transparent 50%);
+    background: repeating-linear-gradient(-45deg,
+        #ff6c6c 0,
+        #ff6c6c 20%,
+        transparent 0,
+        transparent 25%,
+        #1989fa 0,
+        #1989fa 45%,
+        transparent 0,
+        transparent 50%);
     background-size: 80px;
     content: '';
   }
@@ -446,42 +434,41 @@ function cartEmptyHandle() {
   position: relative;
   padding: 10px 15px;
   align-items: center;
+
   &:before {
     position: absolute;
     right: 0;
     bottom: 0;
     left: 0;
     height: 2px;
-    background: -webkit-repeating-linear-gradient(
-      135deg,
-      #ff6c6c 0,
-      #ff6c6c 20%,
-      transparent 0,
-      transparent 25%,
-      #1989fa 0,
-      #1989fa 45%,
-      transparent 0,
-      transparent 50%
-    );
-    background: repeating-linear-gradient(
-      -45deg,
-      #ff6c6c 0,
-      #ff6c6c 20%,
-      transparent 0,
-      transparent 25%,
-      #1989fa 0,
-      #1989fa 45%,
-      transparent 0,
-      transparent 50%
-    );
+    background: -webkit-repeating-linear-gradient(135deg,
+        #ff6c6c 0,
+        #ff6c6c 20%,
+        transparent 0,
+        transparent 25%,
+        #1989fa 0,
+        #1989fa 45%,
+        transparent 0,
+        transparent 50%);
+    background: repeating-linear-gradient(-45deg,
+        #ff6c6c 0,
+        #ff6c6c 20%,
+        transparent 0,
+        transparent 25%,
+        #1989fa 0,
+        #1989fa 45%,
+        transparent 0,
+        transparent 50%);
     background-size: 80px;
     content: '';
   }
 }
+
 .address-card :deep(.van-cell__left-icon) {
   color: #1989fa;
   font-size: 40px;
 }
+
 .address-card :deep(.van-cell__title) {
   line-height: 40px;
 }
