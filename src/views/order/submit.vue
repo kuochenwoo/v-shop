@@ -70,7 +70,9 @@ function getUserAmount() {
 
 const orderSetInfo = ref<Recordable>({});
 function getOrderSetInfo() {
-  API_ORDER.orderSet().then((res) => {
+  const serviceId = orderStore.getTradeGoods.list[0].goodsId;
+  const productId = orderStore.getTradeGoods.list[0].productId;
+  API_ORDER.orderSet({ productId, serviceId }).then((res) => {
     orderSetInfo.value = res.data || {};
   });
 }
@@ -87,7 +89,6 @@ const totalPrice = computed(() =>
 );
 
 function onSubmit() {
-  console.log(goodList)
   if (unref(isNeedLogistics) && !unref(addressInfo).receiverName) {
     showToast({ message: '地址栏不能为空', duration: 1500 });
     return;

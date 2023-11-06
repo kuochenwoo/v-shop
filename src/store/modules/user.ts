@@ -45,14 +45,6 @@ export const useUserStore = defineStore({
     async logout(payload: Recordable = {}) {
       const { goLogin = false } = payload;
 
-      // if (this.getToken) {
-      //   try {
-      //     await API_USER.userLoginOut();
-      //   } catch (error) {
-      //     console.error('退出登录失败', error);
-      //   }
-      // }
-
       this.token = '';
       storage.set('token', '');
       this.userInfo = {};

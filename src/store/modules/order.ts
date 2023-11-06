@@ -34,6 +34,7 @@ export const useOrderStore = defineStore({
             pic: v.servicePic,
             price: v.price,
             productName: v.productName,
+            productId: v.productId
           });
         });
       } else {
@@ -54,7 +55,7 @@ export const useOrderStore = defineStore({
      * @description 只有已关闭、待支付、待评价、已评价的订单才可以删除
      */
     async deleteOrder(payload: Recordable = {}) {
-      const { orderId } = payload;
+      const { outTradeNo } = payload;
 
       await showConfirmDialog({
         title: '确定删除订单？',
@@ -69,7 +70,7 @@ export const useOrderStore = defineStore({
         duration: 0,
       });
 
-      await API_ORDER.orderDelete({ orderId });
+      await API_ORDER.orderDelete({ outTradeNo });
     },
     /**
      * 关闭订单
@@ -101,12 +102,13 @@ export function useOrderStoreWithOut() {
 }
 
 export interface ITradeGoodItem {
-  goodsId: string;
+  goodsId: number;
   name: string;
   number: number;
   pic: string;
   price: number;
   productName: string;
+  productId: number;
 }
 export interface ITradeGoods {
   origin: string;

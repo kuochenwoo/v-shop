@@ -10,7 +10,7 @@ import { usePage } from '@/hooks/shared/usePage';
 const props = defineProps({
   show: { type: Boolean },
   goods: { type: Array as PropType<Recordable[]>, default: () => [] },
-  orderInfo: { type: Object as PropType<Recordable>, default: () => {} },
+  orderInfo: { type: Object as PropType<Recordable>, default: () => { } },
 });
 
 const emit = defineEmits(['update:show', 'success']);
@@ -45,7 +45,7 @@ function onSubmit() {
     duration: 0,
   });
 
-  API_ORDER.orderReputation({ postJsonString: JSON.stringify(params) })
+  API_ORDER.orderReputation({ outTradeNo: props.orderInfo.outTradeNo })
     .then(() => {
       closeToast();
       showToast({ message: '评价成功!', duration: 1500 });
@@ -78,22 +78,14 @@ defineExpose({
 
 <template>
   <van-popup :show="show" round closeable position="bottom" :style="popupStyle" @update:show="updateShow">
-    <div class="rate-header">发表评价</div>
+    <div class="rate-header">发表匿名评价</div>
     <div class="rate-body">
       <van-cell title="请选择您的评分" :border="false"></van-cell>
       <div class="rate-box">
         <van-rate v-model="rateValue" :size="24" :gutter="8" />
       </div>
-      <van-field
-        v-model="rateRemark"
-        :border="false"
-        label="备注"
-        type="textarea"
-        placeholder="非常愉快的一次购物！"
-        maxlength="200"
-        rows="1"
-        autosize
-      />
+      <van-field v-model="rateRemark" :border="false" label="备注" type="textarea" placeholder="非常愉快的一次服务！" maxlength="200"
+        rows="1" autosize />
     </div>
     <div class="rate-actions">
       <van-button type="primary" round block @click="onSubmit">提交评价</van-button>

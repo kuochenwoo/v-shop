@@ -37,8 +37,10 @@ export function orderCreate(data?: Recordable) {
  * 删除订单
  */
 export function orderDelete(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/order/delete`,
+    // url: `/order/delete`,
+    url: `http://${host}:7073/api/order/v1/delete`,
     method: 'post',
     data,
   });
@@ -48,8 +50,10 @@ export function orderDelete(data?: Recordable) {
  * 确认收货
  */
 export function orderDelivery(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/order/delivery`,
+    // url: `/order/delivery`,
+    url: `http://${host}:7073/api/order/v1/confirm`,
     method: 'post',
     data,
   });
@@ -140,8 +144,10 @@ export function orderRefundApplyInfo(data?: Recordable) {
  * 评价接口
  */
 export function orderReputation(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/order/reputation`,
+    // url: `/order/reputation`,
+    url: `http://${host}:7073/api/order/v1/review`,
     method: 'post',
     data,
   });
@@ -151,8 +157,10 @@ export function orderReputation(data?: Recordable) {
  * 获取订单设置信息
  */
 export function orderSet(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/order/set`,
+    // url: `/order/set`,
+    url: `http://${host}:7073/api/order/v1/info`,
     method: 'get',
     params: data,
   });

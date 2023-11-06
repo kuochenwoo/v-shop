@@ -14,7 +14,7 @@ import { setClipboardData } from '@/utils/web/clipboard';
 import { makePhoneCall } from '@/utils/web/makePhoneCall';
 import Price from '@/components/Price/index.vue';
 import OrderSteps from './components/OrderSteps.vue';
-// import OrderRate from './components/OrderRate.vue';
+import OrderRate from './components/OrderRate.vue';
 import { decimalFormat } from '@/utils/format';
 
 import { useOrderStore } from '@/store/modules/order';
@@ -33,13 +33,13 @@ const stepsPopupShow = ref(false);
 // }
 
 const ratePopupShow = ref(false);
-// function onOrderReputation() {
-//   ratePopupShow.value = true;
-// }
+function onOrderReputation() {
+  ratePopupShow.value = true;
+}
 
-// function onRateSuccess() {
-//   onRefresh();
-// }
+function onRateSuccess() {
+  onRefresh();
+}
 
 const orderStore = useOrderStore();
 function onOrderCancel(orderId: number) {
@@ -54,9 +54,9 @@ function onOrderCancel(orderId: number) {
     });
 }
 
-function onOrderDelete(orderId: number) {
+function onOrderDelete(outTradeNo: string) {
   orderStore
-    .deleteOrder({ orderId })
+    .deleteOrder({ outTradeNo })
     .then(() => {
       showToast({ message: '删除订单成功', duration: 1500 });
       router.back();
@@ -76,7 +76,7 @@ function onConcatService() {
   });
 }
 
-function onOrderDelivery(orderId: number) {
+function onOrderDelivery(outTradeNo: string) {
   showConfirmDialog({
     title: '提示',
     message: '确认您已收到商品？',
@@ -88,7 +88,7 @@ function onOrderDelivery(orderId: number) {
         message: '加载中...',
         duration: 0,
       });
-      API_ORDER.orderDelivery({ orderId }).then(() => {
+      API_ORDER.orderDelivery({ outTradeNo }).then(() => {
         closeToast();
         showToast({ message: '确认收货成功', duration: 1500 });
         onRefresh();
@@ -145,6 +145,10 @@ function getOrderStatus(input) {
       return '订单已支付';
     case 'CANCEL':
       return '订单已取消';
+    case 'REVIEW':
+      return '订单待评价';
+    case 'COMPLETE':
+      return '订单已完成';
     default:
       return '未知状态';
   }
@@ -264,9 +268,9 @@ watchEffect(() => {
         </div> -->
       </div>
       <!-- 备注 -->
-      <!-- <div class="section">
+      <div class="section">
         <van-cell title="买家留言" class="cell" :value="orderInfo.remark || '无'" />
-      </div> -->
+      </div>
       <!-- 金额统计信息 -->
       <div class="section">
         <div class="amount">
@@ -320,8 +324,9 @@ watchEffect(() => {
     <div class="action-bar-wrap">
       <div class="action-bar">
         <!-- ▼ 操作按钮组（一行最好不要超过3个） -->
-        <template v-if="orderInfo.state === 'PAY' || orderInfo.state === 'CANCEL'">
-          <van-button class="action-bar-btn" round @click.stop="onOrderDelete(orderInfo.id)"> 删除订单 </van-button>
+        <template
+          v-if="orderInfo.state === 'PAY' || orderInfo.state === 'CANCEL' || orderInfo.state === 'REVIEW' || orderInfo.state === 'COMPLETE'">
+          <van-button class="action-bar-btn" round @click.stop="onOrderDelete(orderInfo.outTradeNo)"> 删除订单 </van-button>
         </template>
         <template v-if="orderInfo.state === 'NEW'">
           <div class="action-bar-hd">
@@ -338,17 +343,21 @@ watchEffect(() => {
             去支付
           </van-button>
         </template>
-        <!-- <template v-if="orderInfo.state === 'NEW'">
+        <template v-if="orderInfo.state === 'NEW'">
           <van-button icon="service" class="action-bar-btn" round @click.stop="onConcatService"> 联系客服 </van-button>
-        </template> -->
+        </template>
         <template v-if="orderInfo.state === 'PAY'">
-          <van-button class="action-bar-btn" round @click.stop="onOrderDelivery(orderInfo.id)">确认消费</van-button>
+          <van-button class="action-bar-btn" round @click.stop="onOrderDelivery(orderInfo.outTradeNo)">确认消费</van-button>
+        </template>
+        <template v-if="orderInfo.state === 'REVIEW'">
+          <!-- <template v-if="orderInfo.state === 'REVIEW'"> -->
+          <van-button class="action-bar-btn" round @click.stop="onOrderReputation">评价</van-button>
         </template>
         <!-- ▲ 操作按钮组 -->
       </div>
     </div>
-    <!-- 评价弹层
-    <OrderRate v-model:show="ratePopupShow" :goods="goods" :order-info="orderInfo" @success="onRateSuccess" /> -->
+    <!-- 评价弹层-->
+    <OrderRate v-model:show="ratePopupShow" :goods="goods" :order-info="orderInfo" @success="onRateSuccess" />
   </div>
 </template>
 

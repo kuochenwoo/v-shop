@@ -18,7 +18,6 @@ const orderStore = useOrderStore();
 function onOrderClicked(item: Recordable) {
 
   const { outTradeNo } = item;
-  console.log(outTradeNo)
   router.push({
     path: '/order/detail',
     query: {
@@ -46,7 +45,7 @@ function onOrderCancel(item: Recordable) {
 
 function onOrderDelete(item: Recordable, index: number) {
   orderStore
-    .deleteOrder({ orderId: item.id })
+    .deleteOrder({ outTradeNo: item.outTradeNo })
     .then(() => {
       showToast({ message: '删除订单成功', duration: 1500 });
       emit('delete', item, index);

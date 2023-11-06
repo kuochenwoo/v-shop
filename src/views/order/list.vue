@@ -28,14 +28,20 @@ onMountedOrActivated(() => {
 const tabList = ref<Recordable[]>([
   { name: '全部', status: '' },
   { name: '待付款', status: 'NEW' },
-  { name: '已支付', status: 'PAY' },
+  { name: '已完成', status: 'PAY' },
   { name: '超时取消', status: 'CANCEL' },
 ]);
+
 const active = ref(0);
 
 function onTabClicked() {
   listQueryType.value = 'query';
   listRef.value?.refresh();
+  // if (item.status === 'PAY' || item.status === 'REVIEW') {
+  //   listRef.value?.refresh('COMPLETE');
+  // } else {
+  //   listRef.value?.refresh(item.status);
+  // }
 }
 
 const listRef = ref<any>(null);
@@ -69,7 +75,8 @@ function getOrderList() {
 
 function listAfterFetch(data) {
   const records = orderListModel(data?.current_data ?? [], data?.goodsMap ?? []);
-  return records;
+  const filteredRecords = records.filter(item => item.del !== 1);
+  return filteredRecords;
 }
 </script>
 
