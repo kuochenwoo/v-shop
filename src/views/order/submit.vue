@@ -234,7 +234,7 @@ function payOrder(payParam) {
     </div>
     <!-- 备注 -->
     <div class="section">
-      <van-field v-model="remark" label="买家留言" type="textarea" placeholder="留言建议提前协商（250字以内）" maxlength="250" rows="1"
+      <van-field v-model="remark" label="买家留言" type="textarea" placeholder="留言建议提前协商（50字以内）" maxlength="50" rows="1"
         autosize />
     </div>
     <!-- 付款方式 默认钱包支付-->

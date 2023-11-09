@@ -29,7 +29,7 @@ const tabList = ref<Recordable[]>([
   { name: '全部', status: '' },
   { name: '待付款', status: 'NEW' },
   { name: '已完成', status: 'PAY' },
-  { name: '超时取消', status: 'CANCEL' },
+  { name: '已取消', status: 'CANCEL' },
 ]);
 
 const active = ref(0);

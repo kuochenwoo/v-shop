@@ -77,8 +77,7 @@ export const useOrderStore = defineStore({
      * @description 待付款的订单可以关闭
      */
     async closeOrder(payload: Recordable = {}) {
-      const { orderId } = payload;
-
+      const { outTradeNo } = payload;
       await showConfirmDialog({
         title: '确定取消订单？',
         message: '订单还未付款,确定要取消吗？',
@@ -92,7 +91,7 @@ export const useOrderStore = defineStore({
         duration: 0,
       });
 
-      await API_ORDER.orderClose({ orderId });
+      await API_ORDER.orderClose({ outTradeNo });
     },
   },
 });

@@ -23,7 +23,7 @@ const orderInfo = ref<Recordable>({});
 
 function goOrder() {
   router.replace({
-    path: '/mine',
+    path: '/order/list',
   });
 }
 

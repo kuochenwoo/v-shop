@@ -32,10 +32,10 @@ function onConcatService(_item: Recordable) {
 
 function onOrderCancel(item: Recordable) {
   orderStore
-    .closeOrder({ orderId: item.id })
+    .closeOrder({ outTradeNo: item.outTradeNo })
     .then(() => {
       showToast({ message: '取消订单成功', duration: 1500 });
-      item.status = -1;
+      item.state = 'CANCEL';
       item.statusStr = `订单关闭`;
     })
     .catch((err) => {

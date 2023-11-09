@@ -224,7 +224,8 @@ function onTaskSubmit() {
                     <div class="list-item-review">
                       <Coupons title="查看评价" />
                     </div>
-                    <van-button type="primary" plain class="buy-btn" @click="onProductClicked(item.id)">立即预约</van-button>
+                    <van-button type="primary" plain class="buy-btn" @click="onProductClicked(item.id)"
+                      :disabled="item.available === 0">立即预约</van-button>
                   </div>
                 </div>
               </div>

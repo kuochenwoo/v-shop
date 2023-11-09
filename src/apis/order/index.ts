@@ -15,8 +15,10 @@ export function peisonFeeList(data?: Recordable) {
  * 关闭订单
  */
 export function orderClose(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/order/close`,
+    // url: `/order/close`,
+    url: `http://${host}:7073/api/order/v1/cancel`,
     method: 'post',
     data,
   });

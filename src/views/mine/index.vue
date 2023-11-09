@@ -10,15 +10,18 @@ import { computed, onMounted, ref, unref } from 'vue';
 import MineSvgWaveBg from '@/components/MineSvgWaveBg/index.vue';
 import { assets } from '@/constants';
 import ICON_ART from '@/assets/images/icon_art.png';
-import { showToast } from 'vant';
+import API_USER from '@/apis/user';
+import { showToast, showDialog } from 'vant';
 import { useUserStore } from '@/store/modules/user';
 import { usePage } from '@/hooks/shared/usePage';
 import { useRouter } from 'vue-router';
+import { decimalFormat } from '@/utils/format';
 
 onMounted(() => {
   console.log("hasLogin", hasLogin.value);
   if (unref(hasLogin)) {
     userStore.getUserDetail();
+    getUserAmount();
     // getCounts();
   }
 });
@@ -31,20 +34,21 @@ const router = useRouter();
 const orderList = ref<Recordable[]>([
   {
     value: '',
-    label: '待付款',
-    icon: 'pending-payment',
-    path: '/order/list?status=0',
+    label: '全部订单',
+    icon: 'comment-o',
+    path: '/order/list?status=NEW',
     count: undefined,
     countKey: 'count_id_no_pay',
   },
-  {
-    value: '',
-    label: '评价',
-    icon: 'comment-o',
-    path: '/order/list?status=3',
-    count: undefined,
-    countKey: 'count_id_no_reputation',
-  },
+  // pending-payment
+  // {
+  //   value: '',
+  //   label: '已完成',
+  //   icon: 'comment-o',
+  //   path: '/order/list?status=PAY',
+  //   count: undefined,
+  //   countKey: 'count_id_no_reputation',
+  // },
   {
     value: '',
     label: '售后',
@@ -53,6 +57,15 @@ const orderList = ref<Recordable[]>([
     count: undefined,
   },
 ]);
+
+// 钱包
+const balance = ref<number>(0);
+
+function getUserAmount() {
+  API_USER.userAmount().then((res) => {
+    balance.value = res.data ?? 0;
+  });
+}
 
 // 常用功能
 const toolList = ref<Recordable[]>([
@@ -79,6 +92,19 @@ function onToolClicked(item) {
   }
 }
 const userInfo = computed(() => userStore.getUserInfo);
+
+function showAmount() {
+  // showToast({
+  //   message: `${decimalFormat(balance.value)}`,
+  //   duration: 1000 * 2,
+  // });
+  showDialog({
+    title: '您的账户余额',
+    message: `${decimalFormat(balance.value)}`,
+  }).then(() => {
+    // on close
+  });
+}
 
 function onEasterEgg() {
   const el = document.querySelector('.header-avatar') as HTMLElement;
@@ -150,7 +176,13 @@ function onLogout() {
             <van-icon class="order-list-item-icon" :name="item.icon" :badge="item.count" />
             <div class="order-list-item-title">{{ item.label }}</div>
           </div>
+          <div class="order-list-item" @click="showAmount">
+            <van-icon class="order-list-item-icon" name="pending-payment" />
+            <div class="order-list-item-title">资产</div>
+          </div>
+
         </div>
+
       </div>
       <!-- 常用功能 -->
       <div class="group">

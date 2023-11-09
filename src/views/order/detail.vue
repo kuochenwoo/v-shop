@@ -42,9 +42,10 @@ function onRateSuccess() {
 }
 
 const orderStore = useOrderStore();
-function onOrderCancel(orderId: number) {
+function onOrderCancel(outTradeNo: string) {
+  console.log(outTradeNo)
   orderStore
-    .closeOrder({ orderId })
+    .closeOrder({ outTradeNo })
     .then(() => {
       showToast({ message: '取消订单成功', duration: 1500 });
       onRefresh();
@@ -66,8 +67,41 @@ function onOrderDelete(outTradeNo: string) {
     });
 }
 
-function onOrderPay(_orderId: number) {
-  showToast({ message: '未开放：收银台', duration: 1500 });
+function payOrder(payParam) {
+  return API_ORDER.orderPay(payParam);
+}
+
+const submitLoading = ref(false);
+async function onOrderPay(_orderId: number) {
+  // showToast({ message: '未开放：收银台', duration: 1500 });
+  showLoadingToast({
+    forbidClick: true,
+    message: '订单创建中...',
+    duration: 0,
+  });
+  submitLoading.value = true;
+  const orderPayParam = {
+    outTradeNo: orderInfo.value.outTradeNo,
+    productId: goods.value[0].productId,
+    serviceId: goods.value[0].serviceId,
+  }
+
+  try {
+    await payOrder(orderPayParam);
+    closeToast();
+    submitLoading.value = false;
+    router.replace({
+      path: '/order/payResult',
+      query: {
+        outTradeNo: orderInfo.value.outTradeNo,
+      },
+    });
+  } catch (error) {
+    closeToast();
+    submitLoading.value = false;
+    console.error(error);
+  }
+
 }
 
 function onConcatService() {
@@ -240,7 +274,7 @@ watchEffect(() => {
           <span class="section-header-title">商品列表</span>
         </div>
         <div class="list">
-          <div v-for="(item, index) in goods" :key="index" class="list-item" @click="onGoodClicked(item.goodsId)">
+          <div v-for="(item, index) in goods" :key="index" class="list-item" @click="onGoodClicked(item.serviceId)">
             <van-image fit="contain" class="list-item-pic" :src="item.servicePic" />
             <div class="list-item-content">
               <div class="list-item-title">{{ item.serviceName }}-{{ item.productName }}</div>
@@ -337,19 +371,19 @@ watchEffect(() => {
             <span class="action-bar-total">合计：</span>
             <div class="action-bar-price">
               <span class="action-bar-price-symbol">¥</span>
-              <span class="action-bar-price-integer">{{ decimalFormat(orderInfo.totalAmount) }}</span>
+              <span class="action-bar-price-integer">{{ decimalFormat(orderInfo.payAmount) }}</span>
             </div>
           </div>
-          <van-button class="action-bar-btn" round plain @click.stop="onOrderCancel(orderInfo.id)">
+          <van-button class="action-bar-btn" round plain @click.stop="onOrderCancel(orderInfo.outTradeNo)">
             取消订单
           </van-button>
-          <van-button class="action-bar-btn" round type="primary" @click.stop="onOrderPay(orderInfo.id)">
+          <van-button class="action-bar-btn" round type="primary" @click.stop="onOrderPay">
             去支付
           </van-button>
         </template>
-        <template v-if="orderInfo.state === 'NEW'">
+        <!-- <template v-if="orderInfo.state === 'NEW'">
           <van-button icon="service" class="action-bar-btn" round @click.stop="onConcatService"> 联系客服 </van-button>
-        </template>
+        </template> -->
         <template v-if="orderInfo.state === 'PAY'">
           <van-button class="action-bar-btn" round @click.stop="onOrderDelivery(orderInfo.outTradeNo)">确认消费</van-button>
         </template>
