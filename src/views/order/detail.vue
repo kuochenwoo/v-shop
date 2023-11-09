@@ -273,10 +273,10 @@ watchEffect(() => {
       </div>
       <!-- 金额统计信息 -->
       <div class="section">
-        <div class="amount">
+        <!-- <div class="amount">
           <div class="amount-hd">服务金额</div>
           <div class="amount-bd">¥ {{ decimalFormat(orderInfo.totalAmount) }}</div>
-        </div>
+        </div> -->
         <!-- <div v-if="orderInfo.isNeedLogistics" class="amount">
           <div class="amount-hd">运费</div>
           <div class="amount-bd">+ {{ decimalFormat(orderInfo.amountLogistics) }}</div>
@@ -312,6 +312,10 @@ watchEffect(() => {
             联系客服:
             <van-button icon="service" class="action-bar-btn-small" round @click.stop="onConcatService"> 联系客服
             </van-button>
+          </div>
+          <div class="order-no-p">
+            上门地址:
+            <span class="order-no-p-value">{{ orderInfo.receiverAddress }}</span>
           </div>
           <!-- <div v-if="orderInfo.isNeedLogistics" class="order-no-p">
             配送方式：

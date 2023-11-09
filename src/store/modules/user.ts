@@ -54,7 +54,6 @@ export const useUserStore = defineStore({
     async getUserDetail() {
       try {
         const res = await API_USER.userDetail();
-        console.log(res.data)
         const base = res.data;
 
         this.userInfo = base;

@@ -322,7 +322,6 @@ export function goodsRebate(data?: Recordable) {
 // goods：id/goodReputationStr/goodReputationRemark/dateReputation
 // user：avatarUrl/nick||mobile （随机生成即可）
 export function goodsReputation(data?: Recordable) {
-  console.log(data);
   return request({
     url: `/shop/goods/reputation/v2`,
     method: 'post',

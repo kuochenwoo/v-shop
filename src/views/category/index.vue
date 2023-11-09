@@ -145,7 +145,6 @@ function onProductClicked(id) {
 }
 
 watchEffect(() => {
-  console.log('hasLogin changed:', hasLogin.value);
   if (hasLogin.value) {
     // Perform your actions here when hasLogin becomes true
     getBannerList();

@@ -110,7 +110,6 @@ export default {
         return;
       }
 
-      console.log(this.form)
       const params = {
         address_detail: this.form.address,
         receiver_name: this.form.name,

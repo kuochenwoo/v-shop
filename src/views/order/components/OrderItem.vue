@@ -3,7 +3,7 @@ import type { PropType } from 'vue';
 import { useRouter } from 'vue-router';
 import { showToast } from 'vant';
 import Price from '@/components/Price/index.vue';
-import { decimalFormat } from '@/utils/format';
+// import { decimalFormat } from '@/utils/format';
 
 import { useOrderStore } from '@/store/modules/order';
 
@@ -60,7 +60,8 @@ function onOrderDelete(item: Recordable, index: number) {
   <div class="list-item">
     <div class="list-item-header van-hairline--bottom">
       <div class="list-item-header-hd">
-        <span class="title">订单编号：{{ item.outTradeNo }}</span>
+        <div class="list-item-header-hd-title">订单编号</div>
+        <div class="list-item-header-hd-number">{{ item.outTradeNo }}</div>
       </div>
       <div :class="['list-item-header-state', item.status !== -1 ? 'text-primary-color' : '']">
         {{ item.statusStr }}
@@ -75,10 +76,9 @@ function onOrderDelete(item: Recordable, index: number) {
               item.orderItemVOList[0].productName }}</div>
             <div v-if="item.goodsInfo.property" class="good-card-prop">{{ item.goodsInfo.property }}</div>
           </div>
-          <div class="good-card-content-bd">
+          <!-- <div class="good-card-content-bd">
             <div class="good-card-price">¥{{ decimalFormat(item.totalAmount) }}</div>
-            <!-- <div class="good-card-number">x{{ item.goodsInfo.number }}</div> -->
-          </div>
+          </div> -->
         </div>
       </div>
       <!-- <div v-if="item.goodsNumber > 1" class="list-item-more">查看全部{{ item.goodsNumber }}件商品</div> -->
@@ -131,9 +131,24 @@ function onOrderDelete(item: Recordable, index: number) {
       font-size: 14px;
       color: var(--color-text-1);
 
+
       &-hd {
         flex: 1;
         margin-right: 10px;
+
+        &-title {
+          font-weight: bold;
+          font-size: small;
+        }
+
+        &-number {
+          font-size: small;
+          overflow: hidden;
+          width: 70%;
+          text-overflow: ellipsis;
+          font-weight: 300;
+          color: grey;
+        }
       }
 
       &-state {

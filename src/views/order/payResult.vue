@@ -34,7 +34,7 @@ function goHome() {
 }
 
 function getDetail() {
-  API_ORDER.orderDetail({ orderNumber: route.query.orderNumber })
+  API_ORDER.orderDetail({ outTradeNo: route.query.outTradeNo })
     .then((res) => {
       orderInfo.value = res.data?.orderInfo ?? {};
     })
@@ -46,10 +46,10 @@ function getDetail() {
 
 <template>
   <div class="container container-full">
-    <div class="result" v-if="orderInfo.orderNumber">
+    <div class="result" v-if="orderInfo.outTradeNo">
       <div class="result-hd">
         <div class="result-icon">
-          <template v-if="orderInfo.isPay">
+          <template v-if="orderInfo.state === 'PAY'">
             <IconPaySuccess class="result-icon-svg" />
           </template>
           <template v-else>
@@ -57,15 +57,15 @@ function getDetail() {
           </template>
         </div>
         <div class="result-status">
-          <div class="result-title">{{ orderInfo.isPay ? '支付成功' : '支付失败' }}</div>
-          <div class="result-title-sub">{{ orderInfo.isPay ? '感谢您的支持' : '再试试支付吧' }}</div>
+          <div class="result-title">{{ orderInfo.state === 'PAY' ? '支付成功' : '支付失败' }}</div>
+          <div class="result-title-sub">{{ orderInfo.state === 'PAY' ? '感谢您的支持' : '再试试支付吧' }}</div>
         </div>
       </div>
-      <div class="result-bd" v-if="orderInfo.amountReal">
+      <div class="result-bd" v-if="orderInfo.payAmount">
         <div class="result-merchant">付款给商家</div>
         <div class="result-amount">
           <span class="result-amount-unit">¥</span>
-          <span class="result-amount-value"> {{ decimalFormat(orderInfo.amountReal) }}</span>
+          <span class="result-amount-value"> {{ decimalFormat(orderInfo.payAmount) }}</span>
         </div>
       </div>
       <div class="result-action">

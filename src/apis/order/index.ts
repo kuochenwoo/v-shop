@@ -26,9 +26,26 @@ export function orderClose(data?: Recordable) {
  * 创建订单[下单]
  */
 export function orderCreate(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/order/create`,
+    // url: `/order/create`,
+    url: `http://${host}:7073/api/order/v1/create`,
     method: 'post',
+    data,
+  });
+}
+
+/**
+ * 获取下单token
+ * @param data 
+ * @returns 
+ */
+export function getOrderToken(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  return request({
+    // url: `/order/create`,
+    url: `http://${host}:7073/api/order/v1/get_token`,
+    method: 'get',
     data,
   });
 }
@@ -89,8 +106,10 @@ export function orderList(data?: Recordable) {
  * 钱包支付订单
  */
 export function orderPay(data?: Recordable) {
+  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `/order/pay`,
+    // url: `/order/pay`,
+    url: `http://${host}:7073/api/order/v1/pay`,
     method: 'post',
     data,
   });
@@ -191,6 +210,7 @@ export function orderStatistics(data?: Recordable) {
 export default {
   peisonFeeList,
   orderClose,
+  getOrderToken,
   orderCreate,
   orderDelete,
   orderDelivery,
