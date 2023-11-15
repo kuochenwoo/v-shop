@@ -13,16 +13,23 @@ import IMAGE_LIST_EMPTY from '@/assets/images/empty/good.png';
 
 onMounted(() => {
   getBannerList();
+  getAdList();
   listRef.value?.loadData();
 });
 
 const router = useRouter();
-
 const bannerList = ref<Recordable[]>([]);
+const adList = ref<Recordable[]>([]);
 
 function getBannerList() {
   API_BANNER.bannerList({ type: 'indexBanner' }).then((res) => {
     bannerList.value = res.data || [];
+  });
+}
+
+function getAdList() {
+  API_BANNER.adList({}).then((res) => {
+    adList.value = res.data || [];
   });
 }
 
@@ -57,6 +64,10 @@ function onItemClick(id: number) {
   router.push({ path: '/good/detail', query: { id } });
 }
 
+function onAdClick(id: number) {
+  router.push({ path: '/ad/detail', query: { id } });
+}
+
 function onBookClicked() {
   // 否则，执行跳转到预约页面的逻辑
   router.push({ path: '/category' });
@@ -74,6 +85,16 @@ function onBookClicked() {
       </van-swipe>
     </div>
     <div class="main">
+      <Plate class="section-header" title="合作商家" />
+
+      <van-swipe :autoplay="3000" class="advertise">
+        <van-swipe-item v-for="item in adList" :key="item.id" class="advertise-item" @click="onAdClick(item.id)">
+          <h1>
+            {{ item.title }}
+          </h1>
+          <van-image class="advertise-item-img" fit="cover" :src="item.picUrl" :alt="item.title" />
+        </van-swipe-item>
+      </van-swipe>
       <Plate class="section-header" title="服务列表" />
       <ProList ref="listRef" v-model:dataSource="list" mode="infinite" :api="getGoodList" :pagination="pagination"
         :meta="listMeta">
@@ -122,6 +143,32 @@ function onBookClicked() {
   &-item-img {
     width: 100%;
     height: 100%;
+  }
+}
+
+.advertise {
+  width: 100%;
+  height: 180px;
+  margin-bottom: 10px;
+
+  &-item,
+  &-item-img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+h1 {
+  font-size: 15px;
+  text-align: center;
+  color: #8f1f1f;
+  text-shadow: 0 0 25px #fff, 0 0 40px #fff, 0 0 55px #e600db, 0 0 70px #0073e6, 0 0 75px #0073e6, 0 0 90px #0073e6, 0 0 115px #0073e6;
+  animation: blinker 2s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
   }
 }
 

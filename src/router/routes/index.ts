@@ -208,6 +208,15 @@ const routes = [
     },
   },
   {
+    path: '/ad/detail',
+    name: 'AdDetail',
+    component: () => import('@/views/ad/detail.vue'),
+    meta: {
+      title: '广告详情',
+      showWindowBar: true,
+    },
+  },
+  {
     path: '/good/reputation',
     name: 'GoodReputation',
     component: () => import('@/views/good/reputation.vue'),
