@@ -163,7 +163,8 @@ export function goodsDel(data?: Recordable) {
 // content是一个HTML字符串
 export function goodsDetail(data?: Recordable) {
   return request({
-    url: `product/v1/services/detail`,
+    // url: `product/v1/services/detail`,
+    url: `http://47.99.137.224:7072/api/product/v1/services/detail`,
     // url: `/shop/goods/detail`,
     method: 'get',
     params: data,
@@ -267,7 +268,8 @@ export function goodsLimitation(data?: Recordable) {
 // 是需要的
 export function goodsList(data?: Recordable) {
   return request({
-    url: `/product/v1/services/list`,
+    url: `http://47.99.137.224:7072/api/product/v1/services/list`,
+    // url: `/product/v1/services/list`,
     // url: `/shop/goods/list/v2`,
     method: 'post',
     data,
@@ -276,7 +278,8 @@ export function goodsList(data?: Recordable) {
 
 export function productList(data?: Recordable) {
   return request({
-    url: `/product/v1/product/list`,
+    url: `http://47.99.137.224:7072/api/product/v1/product/list`,
+    // url: `/product/v1/product/list`,
     method: 'post',
     data,
   });

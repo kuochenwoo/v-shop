@@ -15,10 +15,10 @@ export function peisonFeeList(data?: Recordable) {
  * 关闭订单
  */
 export function orderClose(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/order/close`,
-    url: `http://${host}:7073/api/order/v1/cancel`,
+    url: `http://47.99.137.224:7073/api/order/v1/cancel`,
     method: 'post',
     data,
   });
@@ -28,10 +28,10 @@ export function orderClose(data?: Recordable) {
  * 创建订单[下单]
  */
 export function orderCreate(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/order/create`,
-    url: `http://${host}:7073/api/order/v1/create`,
+    url: `http://47.99.137.224:7073/api/order/v1/create`,
     method: 'post',
     data,
   });
@@ -43,10 +43,10 @@ export function orderCreate(data?: Recordable) {
  * @returns 
  */
 export function getOrderToken(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/order/create`,
-    url: `http://${host}:7073/api/order/v1/get_token`,
+    url: `http://47.99.137.224:7073/api/order/v1/get_token`,
     method: 'get',
     data,
   });
@@ -56,10 +56,10 @@ export function getOrderToken(data?: Recordable) {
  * 删除订单
  */
 export function orderDelete(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/order/delete`,
-    url: `http://${host}:7073/api/order/v1/delete`,
+    url: `http://47.99.137.224:7073/api/order/v1/delete`,
     method: 'post',
     data,
   });
@@ -69,10 +69,10 @@ export function orderDelete(data?: Recordable) {
  * 确认收货
  */
 export function orderDelivery(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/order/delivery`,
-    url: `http://${host}:7073/api/order/v1/confirm`,
+    url: `http://47.99.137.224:7073/api/order/v1/confirm`,
     method: 'post',
     data,
   });
@@ -82,10 +82,10 @@ export function orderDelivery(data?: Recordable) {
  * 订单详情
  */
 export function orderDetail(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/order/detail`,
-    url: `http://${host}:7073/api/order/v1/detail`,
+    url: `http://47.99.137.224:7073/api/order/v1/detail`,
     method: 'get',
     params: data,
   });
@@ -95,10 +95,10 @@ export function orderDetail(data?: Recordable) {
  * 订单列表
  */
 export function orderList(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/order/list`,
-    url: `http://${host}:7073/api/order/v1/page_order`,
+    url: `http://47.99.137.224:7073/api/order/v1/page_order`,
     method: 'post',
     data,
   });
@@ -108,10 +108,10 @@ export function orderList(data?: Recordable) {
  * 钱包支付订单
  */
 export function orderPay(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/order/pay`,
-    url: `http://${host}:7073/api/order/v1/pay`,
+    url: `http://47.99.137.224:7073/api/order/v1/pay`,
     method: 'post',
     data,
   });
@@ -165,10 +165,10 @@ export function orderRefundApplyInfo(data?: Recordable) {
  * 评价接口
  */
 export function orderReputation(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/order/reputation`,
-    url: `http://${host}:7073/api/order/v1/review`,
+    url: `http://47.99.137.224:7073/api/order/v1/review`,
     method: 'post',
     data,
   });
@@ -178,10 +178,10 @@ export function orderReputation(data?: Recordable) {
  * 获取订单设置信息
  */
 export function orderSet(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/order/set`,
-    url: `http://${host}:7073/api/order/v1/info`,
+    url: `http://47.99.137.224:7073/api/order/v1/info`,
     method: 'get',
     params: data,
   });

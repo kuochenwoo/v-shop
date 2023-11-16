@@ -9,7 +9,8 @@ import { request } from '@/utils/request';
 // 只有 id/picUrl/title/linkUrl 是需要的
 export function bannerList(data?: Recordable) {
   return request({
-    url: `/product/v1/banner/list`,
+    // url: `/product/v1/banner/list`,
+    url: `http://47.99.137.224:7072/api/product/v1/banner/list`,
     // url: `/banner/list`,
     method: 'get',
     params: data,
@@ -17,20 +18,20 @@ export function bannerList(data?: Recordable) {
 }
 
 export function adList(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/order/pay`,
-    url: `http://${host}:7072/api/product/v1/ad/list`,
+    url: `http://47.99.137.224:7072/api/product/v1/ad/list`,
     method: 'get',
     data,
   });
 }
 
 export function adDetail(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `product/v1/services/detail`,
-    url: `http://${host}:7072/api/product/v1/ad/detail`,
+    url: `http://47.99.137.224:7072/api/product/v1/ad/detail`,
     // url: `/shop/goods/detail`,
     method: 'get',
     params: data,

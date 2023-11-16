@@ -105,19 +105,19 @@ h1 {
     }
 
     &-contact {
-        margin-top: 10px;
+        // margin-top: 10px;
     }
 
     &-phone {
-        margin-top: 10px;
+        // margin-top: 10px;
     }
 
     &-address {
-        margin-top: 100px;
+        // margin-top: 100px;
     }
 
     &-link {
-        margin-top: 10px;
+        // margin-top: 10px;
 
         &-link {
             font-size: small;
@@ -125,9 +125,9 @@ h1 {
     }
 
     &-info {
-        position: fixed;
-        bottom: 10px;
-        left: 10px;
+        margin-top: 50%;
+        margin-left: 2%;
+        margin-bottom: 3%;
     }
 
     &-text {

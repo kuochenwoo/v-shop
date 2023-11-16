@@ -5,10 +5,10 @@ import { ContentTypeEnum } from '@/utils/request/types';
  * 查看用户资产
  */
 export function userAmount(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/user/amount`,
-    url: `http://${host}:7071/api/user/v1/amount`,
+    url: `http://47.99.137.224:7071/api/user/v1/amount`,
     method: 'get',
     params: data,
   });
@@ -29,9 +29,9 @@ export function userCashLog(data?: Recordable) {
  * 查看用户详情
  */
 export function userDetail(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;  
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;  
   return request({
-    url: `http://${host}:7071/api/user/v1/detail`,
+    url: `http://47.99.137.224:7071/api/user/v1/detail`,
     method: 'get',
     params: data,
   });
@@ -41,9 +41,9 @@ export function userDetail(data?: Recordable) {
  * 修改用户信息
  */
 export function userModify(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `http://${host}:7071/api/user/v1/modify`,
+    url: `http://47.99.137.224:7071/api/user/v1/modify`,
     method: 'get',
     params: data,
   });
@@ -75,9 +75,9 @@ export function userMBindMobile(data?: Recordable) {
  * 用户登录[手机号码]
  */
 export function userMLogin(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `http://${host}:7071/api/user/v1/login`,
+    url: `http://47.99.137.224:7071/api/user/v1/login`,
     method: 'post',
     data,
     contentType: ContentTypeEnum.JSON,
@@ -99,9 +99,9 @@ export function userMLoginMobile(data?: Recordable) {
  * 用户注册[手机号]
  */
 export function userMRegister(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `http://${host}:7071/api/user/v1/register`,
+    url: `http://47.99.137.224:7071/api/user/v1/register`,
     method: 'post',
     data,
     contentType: ContentTypeEnum.JSON,
@@ -134,9 +134,9 @@ export function userModifyPwd(data?: Recordable) {
  * 添加收货地址
  */
 export function userShoppingAddressAdd(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `http://${host}:7071/api/address/v1/add`,
+    url: `http://47.99.137.224:7071/api/address/v1/add`,
     // url: `/user/shipping-address/add`,
     method: 'post',
     data,
@@ -147,9 +147,9 @@ export function userShoppingAddressAdd(data?: Recordable) {
  * 获取默认收货地址
  */
 export function userShoppingAddressDefault(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `http://${host}:7071/api/address/v1/default`,
+    url: `http://47.99.137.224:7071/api/address/v1/default`,
     method: 'get',
     params: data,
   });
@@ -159,9 +159,9 @@ export function userShoppingAddressDefault(data?: Recordable) {
  * 删除收货地址
  */
 export function userShoppingAddressDelete(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `http://${host}:7071/api/address/v1/del`,
+    url: `http://47.99.137.224:7071/api/address/v1/del`,
     method: 'post',
     data,
   });
@@ -171,10 +171,10 @@ export function userShoppingAddressDelete(data?: Recordable) {
  * 收货地址详情
  */
 export function userShoppingAddressDetail(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/user/shipping-address/detail/v2`,
-    url: `http://${host}:7071/api/address/v1/find`,
+    url: `http://47.99.137.224:7071/api/address/v1/find`,
     method: 'get',
     params: data,
   });
@@ -184,10 +184,10 @@ export function userShoppingAddressDetail(data?: Recordable) {
  * 收货地址列表
  */
 export function userShoppingAddressList(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/user/shipping-address/list/v2`,
-    url: `http://${host}:7071/api/address/v1/list`,
+    url: `http://47.99.137.224:7071/api/address/v1/list`,
     method: 'get',
     data,
   });
@@ -197,10 +197,10 @@ export function userShoppingAddressList(data?: Recordable) {
  * 修改收货地址
  */
 export function userShoppingAddressUpdate(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
     // url: `/user/shipping-address/update`,
-    url: `http://${host}:7071/api/address/v1/update`,
+    url: `http://47.99.137.224:7071/api/address/v1/update`,
     method: 'post',
     data,
   });

@@ -18,9 +18,9 @@ export function verificationMailCheck(data?: Recordable) {
  * 获取邮件验证码
  */
 export function verificationMailGet(data?: Recordable) {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
   return request({
-    url: `http://${host}:7071/api/user/v1/send_code`,
+    url: `http://47.99.137.224:7071/api/user/v1/send_code`,
     method: 'get',
     params: data,
   });
@@ -41,8 +41,8 @@ export function verificationPicCheck(data?: Recordable) {
  * 获取图形验证码
  */
 export function verificationPicGet() {
-  const host: string = import.meta.env.VITE_APP_API_HOST_MY;
-  return `http://${host}:7071/api/user/v1/captcha`
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  return `http://47.99.137.224:7071/api/user/v1/captcha`
 }
 
 /**
