@@ -54,8 +54,8 @@ export const darkTheme: ITheme = {
   colors: {
     black: '#000',
     white: '#fff',
-    primary: '#1ba784',
-    vice: '#d9f6ef',
+    primary: '#c3a769',
+    vice: '#562E37',
   },
   /**
    *  覆盖Vant 的基础变量

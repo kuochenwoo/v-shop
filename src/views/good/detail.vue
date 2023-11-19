@@ -12,9 +12,9 @@ import API_GOODS from '@/apis/goods';
 import API_CART from '@/apis/cart';
 import { makePhoneCall } from '@/utils/web/makePhoneCall';
 // import { shoppingCartAddParams } from '@/apis/cart/types';
-import { ISku, IInitialSku } from '@/components/Sku/types';
+import { ISku } from '@/components/Sku/types';
 // import Coupons from './components/Coupons.vue';
-import Reputations from './components/Reputations.vue';
+// import Reputations from './components/Reputations.vue';
 import { decimalFormat, priceIntegerFormat } from '@/utils/format';
 // import { debounce } from '@/utils';
 // import { getAfterSaleTitle } from '@/model/modules/order/afterSale';
@@ -32,6 +32,7 @@ onMounted(() => {
 
 const route = useRoute();
 const router = useRouter();
+const active = ref(0);
 // const orderStore = useOrderStore();
 const { hasLogin } = usePage();
 
@@ -92,8 +93,8 @@ function getGoodsDetail() {
 }
 
 // Sku
-const skuNextActionType = ref('goBuy');
-const skuShow = ref(false);
+// const skuNextActionType = ref('goBuy');
+// const skuShow = ref(false);
 const sku = ref<ISku>({
   goodsId: 0,
   price: 0,
@@ -102,32 +103,37 @@ const sku = ref<ISku>({
   propList: [],
   skuList: [],
 });
-const initialSku = ref<IInitialSku>({
-  selectedNum: 1,
-  selectedProps: {},
-  selectedPropList: [],
-});
+// const initialSku = ref<IInitialSku>({
+//   selectedNum: 1,
+//   selectedProps: {},
+//   selectedPropList: [],
+// });
 
 /**
  * 是否多规格
  */
 const hasSku = computed(() => !!unref(sku).skuList.length);
 
-const goodSelectedSkuTitle = computed(() => {
-  if (unref(hasSku)) {
-    if (unref(initialSku).selectedPropList.length) {
-      return unref(initialSku).selectedPropList.reduce((acc, cur) => `${acc} ${cur.childName}`, '');
-    } else {
-      return unref(sku).propList.reduce((acc, cur) => `${acc} ${cur.name}`, '');
-    }
-  } else {
-    return '';
-  }
-});
+// const goodSelectedSkuTitle = computed(() => {
+//   if (unref(hasSku)) {
+//     if (unref(initialSku).selectedPropList.length) {
+//       return unref(initialSku).selectedPropList.reduce((acc, cur) => `${acc} ${cur.childName}`, '');
+//     } else {
+//       return unref(sku).propList.reduce((acc, cur) => `${acc} ${cur.name}`, '');
+//     }
+//   } else {
+//     return '';
+//   }
+// });
 
-function onSkuShow(type: string) {
-  skuNextActionType.value = type;
-  skuShow.value = true;
+// function onSkuShow(type: string) {
+//   skuNextActionType.value = type;
+//   skuShow.value = true;
+// }
+
+function generateRandomNumber() {
+  // 生成一个介于8到15之间的随机整数
+  return Math.floor(Math.random() * 8) + 8;
 }
 
 // const onSkuConfirm = debounce((data) => {
@@ -240,14 +246,30 @@ function getCartCount() {
             <span class="price-origin-integer">{{ decimalFormat(basicInfo.originalPrice) }}</span>
           </div>
         </div>
+
       </div>
+
       <div class="desc">
         <div class="desc-hd">
-          <div class="desc-title van-multi-ellipsis--l2">{{ basicInfo.name }}</div>
+          <div class="desc-title">{{ basicInfo.name }}</div>
+          <div class="desc-info-time">
+            <van-icon name="underway-o" />
+            {{ basicInfo.status }}分钟
+          </div>
+          <div class="desc-info-other">
+            <!-- <div class="card-other-info"> -->
+            <div class="list-item-appointment">
+              <span class="list-item-appointment-bk1">最早可约：</span>
+              <span class="list-item-appointment-bk2">12:00</span>
+            </div>
+            <div class="list-item-distance">最近技师：{{ generateRandomNumber() }}分钟</div>
+            <!-- </div> -->
+          </div>
           <!-- <div v-if="basicInfo.characteristic" class="desc-brief">
             {{ basicInfo.characteristic }}
           </div> -->
         </div>
+
       </div>
     </div>
 
@@ -261,21 +283,88 @@ function getCartCount() {
       </template>
     </van-cell> -->
 
-    <van-cell v-if="hasSku" :border="false" is-link @click="onSkuShow">
+    <!-- <van-cell v-if="hasSku" :border="false" is-link @click="onSkuShow">
       <template #title>
         <div class="cell-bar">
           <div class="cell-bar-title">{{ initialSku.selectedPropList.length ? '已选' : '选择' }}</div>
           <div class="cell-bar-text">{{ goodSelectedSkuTitle }}</div>
         </div>
       </template>
-    </van-cell>
+    </van-cell> -->
 
     <!-- 获取商品评价 -->
-    <Reputations v-if="basicInfo.id" class="mt10" :goods-id="basicInfo.id" />
+    <!-- <Reputations v-if="basicInfo.id" class="mt10" :goods-id="basicInfo.id" /> -->
 
     <!-- content也是由后端返回，全部为html格式 -->
-    <Plate title="服务详情" class="mt10" />
-    <div class="goods-content" v-html="content"></div>
+    <!-- <Plate title="服务详情" class="mt10" /> -->
+    <van-tabs v-model:active="active" type="card" swipeable animated color="#CA7A2C" style="margin-top: 5%;">
+      <van-tab title="项目详解">
+        <br>
+        <div class="goods-content" v-html="content"></div>
+        <br>
+      </van-tab>
+      <van-tab title="下单须知">
+        <br>
+        <div class="know-text">
+          1、秋香到家服务属于舒缓保健，不是治疗，如需治疗请到医院就诊。
+        </div>
+        <div class="know-text">
+          2、秋香到家服务只提供专业、正规的推拿服务。对于不正当的行为和要求，技师有权拒绝服务，并保留诉诸法律的权利。
+        </div>
+        <div class="know-text">
+          3、客人因看见技师不够漂亮等与专业无关系列因素而要求退单者，该客人所付项目费退一半，交通费不予退还。
+        </div>
+        <div class="know-text">
+          4、服务开始过后，因顾客原因提前终止服务的，服务费不予退还。
+        </div>
+        <div class="know-text">
+          5、在平台规定的服务范国内如因技师个人的手法、态度问题而导致客人不满意而要求退单者，平台在查清核实后将会无理由退款。退款金额会在7个工作日内退到顾客的支付账户里。
+        </div>
+        <div class="know-text">
+          6、客人下单后，技师与该客人联系确定了服务时间、服务地址；若技师已经出发，客人要取消订单的，该客人所付的交通费用不予退还。
+        </div>
+        <div class="know-text">
+          7、技师到达服务地址后，等待时间不得超过20分钟，否则系统会自动按项目的服务时间开始倒计时。
+        </div>
+        <div class="know-text">
+          8、顾客下单后，当技师还没出发时，顾客可申请全额退款。
+        </div>
+        <br>
+      </van-tab>
+      <van-tab title="禁忌说明">
+        <br>
+        <div class="know-text">
+          1、妇女在月经和妊娠期间不宜做腹部、腰骶部按摩。
+        </div>
+        <div class="know-text">
+          2、饭后半小时不宜做按摩。
+        </div>
+        <div class="know-text">
+          3、极度疲劳、醉酒神志不清者禁用。
+        </div>
+        <div class="know-text">
+          4、皮肤病、皮肤破损者（如瘟瘆，疱珍，脓肿，烧伤，烫伤）禁用。
+        </div>
+        <div class="know-text">
+          5、内科为重的病人，如严重的心脏病，各种恶性肿瘤，急腹症，急性阑尾炎，宫外孕，胰腺炎等禁用。
+        </div>
+        <div class="know-text">
+          6、骨折复位稳定，开放性的骨折人体，内有金属固定物禁用。
+        </div>
+        <div class="know-text">
+          7、感染性疾病，如骨结核，骨髓炎禁用。
+        </div>
+        <div class="know-text">
+          8、糖尿病受术者，下肢静脉曲张和血栓性静脉炎，局部肿胀者禁用。
+        </div>
+        <div class="know-text">
+          9、需外科手术的人，及其他严重疾病或诊断不明的较严重疾病禁用。
+        </div>
+        <br>
+
+      </van-tab>
+    </van-tabs>
+
     <div class="action-bar-perch"></div>
     <!-- 商品导航栏 -->
     <van-action-bar>
@@ -300,6 +389,66 @@ function getCartCount() {
   background: var(--color-bg-2);
 }
 
+.know-text {
+  font-size: 12px;
+  line-height: 20px;
+  padding: 0 10px;
+  word-break: break-word;
+}
+
+.desc-info-other {
+  display: flex;
+  flex-direction: column;
+  align-content: stretch;
+  align-items: center;
+  justify-content: center;
+}
+
+.desc-info-time {
+  font-size: 14px;
+}
+
+.list {
+  &-item {
+    &-distance {
+      margin-top: 1%;
+      font-size: 10px;
+      color: grey;
+      text-align: right;
+    }
+
+    &-appointment {
+      font-size: 10px;
+      font-weight: 500;
+      border-radius: 5px;
+      padding-left: 5px;
+      background-color: #221406;
+      display: flex;
+
+      &-bk1 {
+        border-radius: 5px;
+        color: burlywood;
+        display: flex;
+        align-items: center;
+      }
+
+      &-bk2 {
+        flex: 1;
+        color: #2e1d05;
+        padding-right: 5px;
+        padding-left: 5px;
+        background-color: darksalmon;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+}
+
 .swiper {
   width: 100%;
   height: 375px;
@@ -320,6 +469,8 @@ function getCartCount() {
 .price {
   margin-top: 10px;
 
+  &-hd {}
+
   &-current {
     display: flex;
     align-items: flex-end;
@@ -338,6 +489,8 @@ function getCartCount() {
       font-weight: bold;
       font-family: @font-family-price-integer;
     }
+
+
   }
 
   &-origin {
@@ -375,8 +528,9 @@ function getCartCount() {
   margin-top: 10px;
 
   &-title {
-    font-size: 16px;
-    line-height: 20px;
+    // font-size: 16px;
+    // line-height: 20px;
+    display: flex;
   }
 
   &-brief {
@@ -384,6 +538,15 @@ function getCartCount() {
     color: var(--color-text-3);
     font-size: 12px;
     word-break: break-all;
+  }
+
+  &-hd {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: stretch;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 

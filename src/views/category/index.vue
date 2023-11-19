@@ -23,7 +23,19 @@ onMounted(() => {
       product_list.value = res.data.result || [];
     });
   }
+  selectedProductId = null;
+  selectedServiceId = null;
 });
+
+let imgDetailArr = ref<any>(null);
+const showImgPopup = ref(false);
+const showPopup = (id: number) => {
+  showImgPopup.value = true;
+  let selectedObject = list.value.filter(obj => obj.id === id);
+  const { introImg1, introImg2, introImg3, introImg4 } = selectedObject[0]
+  imgDetailArr = [introImg1, introImg2, introImg3, introImg4];
+  console.log(imgDetailArr)
+};
 
 const { hasLogin, goLogin } = usePage();
 const bannerList = ref<Recordable[]>([]);
@@ -146,7 +158,6 @@ function onProductClicked(id) {
 
 watchEffect(() => {
   if (hasLogin.value) {
-    // Perform your actions here when hasLogin becomes true
     getBannerList();
     listRef.value?.loadData();
   }
@@ -199,36 +210,70 @@ function onTaskSubmit() {
           :meta="listMeta">
           <div class="list">
             <div v-for="item in list" :key="item.id" class="list-col">
-              <div class="list-item" style="display: flex;">
-                <div v-if="item.available" class="list-item-badge">可服务</div>
-                <van-image class="list-item-photo" :src="item.coverImg" :alt="item.name" />
-
-                <div class="list-item-info">
-
-                  <div class="list-item-info-more">
-                    <div class="list-item-title">{{ item.name }}</div>
-                    <div class="list-item-detail-more">
-                      <div class="list-item-distance">车程约：{{ item.distance }}分钟</div>
-                      <div class="list-item-appointment">
-                        <span class="list-item-appointment-bk1">最早可约：</span>
-                        <span class="list-item-appointment-bk2">{{ formatTime(item.availableTime) }}</span>
-                      </div>
+              <van-card :desc="item.detail">
+                <template #price>
+                  <span class="card-review" style="margin-left: -7%;">
+                    好评
+                    <span class="card-review-score">
+                      {{ item.score }}
+                    </span>
+                    分
+                    <Coupons title="查看评价" class="card-review-check" />
+                  </span>
+                </template>
+                <template #thumb>
+                  <div style="margin-left: -12%;">
+                    <van-image width="85" height="85" :src="item.coverImg" fit="cover" position="center" />
+                  </div>
+                  <div v-if="item.available === 1" style="margin-left: -12%;">
+                    <van-tag type="primary" style="position: absolute; bottom: 0px;">可服务</van-tag>
+                  </div>
+                  <div v-if="item.available === 0" style="margin-left: -12%;">
+                    <van-tag type="primary" style="position: absolute; bottom: 0px;">服务中</van-tag>
+                  </div>
+                </template>
+                <template #tag>
+                  <div class="card-tag">
+                    <div v-if="item.role === 1">
+                      <van-tag type="primary" class="card-tag-one">新人</van-tag>
                     </div>
                   </div>
-                  <div class="list-item-detail">{{ item.detail }}</div>
-                  <div class="reputation-inner-stars">
-                    <van-rate v-model="item.role" :size="14" color="#f44" icon="like" void-icon="like" void-color="#eee"
-                      readonly :count="item.role" />
+
+                </template>
+                <template #title>
+                  <div class="card-title-name">
+                    {{ item.name }}
+                    <van-tag type="primary" class="card-title-tag" @click="showPopup(item.id)">生活照</van-tag>
                   </div>
-                  <div class="list-item-price">
-                    <div class="list-item-review">
-                      <Coupons title="查看评价" />
+                </template>
+                <template #desc>
+                  <span class="card-desc">
+                    {{ item.detail }}
+                  </span>
+                </template>
+                <template #footer>
+                  <div class="card-other-info">
+                    <div class="list-item-appointment">
+                      <span class="list-item-appointment-bk1">最早可约：</span>
+                      <span class="list-item-appointment-bk2">{{ formatTime(item.availableTime) }}</span>
                     </div>
-                    <van-button type="primary" plain class="buy-btn" @click="onProductClicked(item.id)"
-                      :disabled="item.available === 0">立即预约</van-button>
+                    <div class="list-item-distance">车程约：{{ item.distance }}分钟</div>
                   </div>
-                </div>
-              </div>
+                </template>
+                <template #bottom>
+                  <div>
+                    <van-button color="linear-gradient(to right, #FF653A, #ED001C)" class="card-order-button"
+                      @click="onProductClicked(item.id)" span v-if="item.available === 1" round>
+                      <span style="font-size: 12px;">立即预约</span>
+                    </van-button>
+                    <van-button color="linear-gradient(to right, #FF653A, #ED001C)" class="card-order-button"
+                      @click="onProductClicked(item.id)" span v-if="item.available === 0" disabled round>
+                      <span style="font-size: 12px;">请稍候</span>
+                    </van-button>
+                  </div>
+                  <!-- <van-cell title="展示弹出层" is-link @click="showPopup(item.id)" /> -->
+                </template>
+              </van-card>
             </div>
           </div>
         </ProList>
@@ -266,19 +311,97 @@ function onTaskSubmit() {
       </div>
 
     </van-popup>
+    <van-popup v-model:show="showImgPopup" :style="{ height: '27%' }">
+      <van-swipe :autoplay="3000" lazy-render>
+        <van-swipe-item v-for="image in imgDetailArr" :key="image">
+          <van-image class="popup-photo" :src="image" />
+        </van-swipe-item>
+      </van-swipe>
+    </van-popup>
 
   </template>
   <van-empty v-else class="empty" :image="listEmptyImage">
-    <!-- <template> -->
     <div class="empty-title">登录后才能看到技师列表</div>
     <van-button class="empty-btn" type="primary" round @click="goLogin">去登录</van-button>
-    <!-- </template> -->
   </van-empty>
   <Tabbar />
 </template>
 
 
 <style lang="less" scoped>
+.card-review {
+  font-weight: 500;
+  display: flex;
+
+  &-score {
+    color: red;
+  }
+
+  &-check {
+    display: flex;
+  }
+}
+
+.card-tag {
+  display: flex;
+  display: flex;
+  margin-left: -30%;
+
+  &-one {
+    color: #fff;
+    background-color: #ee0a247a;
+  }
+
+  &-two {
+    color: #fff;
+    background-color: #ee0a247a;
+  }
+}
+
+.card-xxx {
+  display: flex;
+}
+
+.card-title {
+  &-name {
+    font-size: medium;
+    margin-left: -5%;
+  }
+
+  &-tag {
+    background-color: rgba(255, 72, 170, 0.79);
+  }
+}
+
+.card-order-button {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 35%;
+  width: 40%;
+}
+
+.order-button {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 30%;
+  width: 35%;
+}
+
+.card-other-info {
+  position: absolute;
+  right: 5%;
+  top: 10%;
+}
+
+.card-desc {
+  font-weight: 500;
+  color: grey;
+  margin-top: 2%;
+  margin-left: -5%;
+}
+
 .bbb {
   display: flex;
   justify-content: space-between;
@@ -326,6 +449,10 @@ function onTaskSubmit() {
 
     &-item {
       margin-bottom: 10px;
+    }
+
+    &-photo {
+      display: flex;
     }
   }
 
@@ -388,9 +515,24 @@ function onTaskSubmit() {
       font-size: 10px;
     }
 
+    &-new {
+      position: absolute;
+      top: 30px;
+      left: 0;
+      z-index: 20;
+      display: inline-block;
+      padding: 2px 4px;
+      color: #fff;
+      background-color: #cc0fc27a;
+      line-height: normal;
+      border-radius: 0 8px 8px 0;
+      padding-right: 6px;
+      font-size: 14px;
+    }
+
     &-photo {
       display: flex;
-      width: 70%;
+      width: 30%;
       height: 80%;
       // height: 172px;
     }
@@ -408,6 +550,7 @@ function onTaskSubmit() {
     }
 
     &-distance {
+      margin-top: 3%;
       font-size: 10px;
       color: grey;
       text-align: right;
@@ -527,6 +670,13 @@ function onTaskSubmit() {
   }
 }
 
+.my-swipe .van-swipe-item {
+  color: #fff;
+  font-size: 20px;
+  line-height: 150px;
+  text-align: center;
+  background-color: #39a9ed;
+}
 
 .empty {
   text-align: center;

@@ -9,7 +9,6 @@ import { computed, onMounted, ref, unref } from 'vue';
 // import API_ORDER from '@/apis/order';
 import MineSvgWaveBg from '@/components/MineSvgWaveBg/index.vue';
 import { assets } from '@/constants';
-import ICON_ART from '@/assets/images/icon_art.png';
 import API_USER from '@/apis/user';
 import { showToast, showDialog } from 'vant';
 import { useUserStore } from '@/store/modules/user';
@@ -30,33 +29,6 @@ const userStore = useUserStore();
 const { hasLogin, goLogin, goPage } = usePage();
 const router = useRouter();
 
-// 我的订单
-const orderList = ref<Recordable[]>([
-  {
-    value: '',
-    label: '全部订单',
-    icon: 'comment-o',
-    path: '/order/list?status=NEW',
-    count: undefined,
-    countKey: 'count_id_no_pay',
-  },
-  // pending-payment
-  // {
-  //   value: '',
-  //   label: '已完成',
-  //   icon: 'comment-o',
-  //   path: '/order/list?status=PAY',
-  //   count: undefined,
-  //   countKey: 'count_id_no_reputation',
-  // },
-  {
-    value: '',
-    label: '售后',
-    icon: 'after-sale',
-    path: '/refund',
-    count: undefined,
-  },
-]);
 
 // 钱包
 const balance = ref<number>(0);
@@ -65,31 +37,6 @@ function getUserAmount() {
   API_USER.userAmount().then((res) => {
     balance.value = res.data ?? 0;
   });
-}
-
-// 常用功能
-const toolList = ref<Recordable[]>([
-  { icon: 'point-gift-o', title: '积分兑换', path: '/integral/exchange' },
-  { icon: 'coupon-o', title: '优惠券', path: '/coupon' },
-  { icon: 'location-o', title: '收货地址', path: '/address' },
-  { icon: 'setting-o', title: '设置', path: '/setting' },
-  { icon: ICON_ART, title: '主题', path: '/theme' },
-]);
-
-function onToolClicked(item) {
-  console.log(item)
-  if (item.title != '主题' && item.title != '收货地址' && item.title != '设置') {
-    showToast({
-      message: `${item.title}敬请期待`,
-      duration: 1000 * 2,
-    });
-    return;
-  }
-
-  if (item.path) {
-    goPage(item.path);
-    return;
-  }
 }
 const userInfo = computed(() => userStore.getUserInfo);
 
@@ -136,8 +83,6 @@ function onLogout() {
           <div class="header-tag">个人资料</div>
           <div class="header-tag-logout" @click="onLogout">退出登录</div>
         </div>
-        <!-- <div class="header-tag">个人资料</div>
-        <div class="header-tag" @click="onLogout">退出登录</div> -->
         <van-image class="header-avatar" :src="userInfo.avatarUrl || assets.avatar" alt="" @click.stop="onEasterEgg" />
         <div class="header-info">
           <div class="header-nick van-ellipsis mb10">
@@ -160,45 +105,167 @@ function onLogout() {
         </div>
       </div>
     </div>
-    <div class="main">
-      <div class="group"></div>
-      <!-- 订单 -->
-      <div class="group">
-        <div class="group-header van-hairline--bottom" @click="goPage('/order/list')">
-          <div class="group-header-hd">我的订单</div>
-          <div class="group-header-bd">
-            <span class="group-header-txt">查看全部订单</span>
-            <van-icon class="group-header-arrow" name="arrow" />
+    <van-grid direction="horizontal" :column-num="1">
+      <van-grid-item @click="goPage('/order/list')">
+        <template #text>
+          <div class="menu-text">
+            <div class="menu-text-up">
+              全部订单
+            </div>
+            <div class="menu-text-down">
+              查看订单详情
+            </div>
           </div>
-        </div>
-        <div class="order-list">
-          <div v-for="(item, index) in orderList" :key="index" class="order-list-item" @click="goPage(item.path)">
-            <van-icon class="order-list-item-icon" :name="item.icon" :badge="item.count" />
-            <div class="order-list-item-title">{{ item.label }}</div>
+          <div class="menu-icon">
+            <van-icon name="orders-o" />
           </div>
-          <div class="order-list-item" @click="showAmount">
-            <van-icon class="order-list-item-icon" name="pending-payment" />
-            <div class="order-list-item-title">资产</div>
+          <span class="menu-arrow">
+            <van-icon name="arrow" />
+          </span>
+        </template>
+        <template #icon>
+          <van-icon name="location-o" color="transparent" />
+        </template>
+
+      </van-grid-item>
+      <van-grid-item to="/address">
+        <template #text>
+          <div class="menu-text">
+            <div class="menu-text-up">
+              收货地址
+            </div>
+            <div class="menu-text-down">
+              常用地址及联系方式
+            </div>
+          </div>
+          <div class="menu-icon">
+            <van-icon name="location-o" />
           </div>
 
-        </div>
-
-      </div>
-      <!-- 常用功能 -->
-      <div class="group">
-        <div class="group-header van-hairline--bottom">
-          <div class="group-header-hd">常用功能</div>
-        </div>
-        <div class="tool-list">
-          <div v-for="(item, index) in toolList" :key="index" class="tool-list-item" @click="onToolClicked(item)">
-            <van-icon class="tool-list-item-icon" :name="item.icon" :badge="item.count" />
-            <div class="tool-list-item-title">{{ item.title }}</div>
+          <span class="menu-arrow">
+            <span class="menu-arrow-info">编辑</span>
+            <van-icon name="arrow" />
+          </span>
+        </template>
+        <template #icon>
+          <van-icon name="location-o" color="transparent" />
+        </template>
+      </van-grid-item>
+      <van-grid-item @click="showAmount" style="margin-top: 5%;">
+        <template #text>
+          <div class="menu-text">
+            <div class="menu-text-up">
+              我的资产
+            </div>
+            <div class="menu-text-down">
+              备用金余额
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-    <!-- 版权 -->
-    <Copyright />
+          <div class="menu-icon">
+            <van-icon name="points" />
+          </div>
+          <span class="menu-arrow">
+            <span class="menu-arrow-info">查看</span>
+            <van-icon name="arrow" />
+          </span>
+        </template>
+        <template #icon>
+          <van-icon name="location-o" color="transparent" />
+        </template>
+      </van-grid-item>
+      <van-grid-item @click="goPage('/refund')">
+        <template #text>
+          <div class="menu-text">
+            <div class="menu-text-up">
+              联系客服
+            </div>
+            <div class="menu-text-down">
+              拨打客服电话
+            </div>
+          </div>
+          <div class="menu-icon">
+            <van-icon name="phone-o" />
+          </div>
+          <span class="menu-arrow">
+            <van-icon name="arrow" />
+          </span>
+        </template>
+        <template #icon>
+          <van-icon name="location-o" color="transparent" />
+        </template>
+      </van-grid-item>
+      <van-grid-item @click="showToast({
+        message: `敬请期待`,
+        duration: 1000 * 2,
+      })">
+        <template #text>
+          <div class="menu-text">
+            <div class="menu-text-up">
+              优惠券
+            </div>
+            <div class="menu-text-down">
+              查看我的优惠券
+            </div>
+          </div>
+          <div class="menu-icon">
+            <van-icon name="coupon-o" />
+          </div>
+          <span class="menu-arrow">
+            <van-icon name="arrow" />
+          </span>
+        </template>
+        <template #icon>
+          <van-icon name="location-o" color="transparent" />
+        </template>
+      </van-grid-item>
+      <van-grid-item @click="showToast({
+        message: `敬请期待`,
+        duration: 1000 * 2,
+      })">
+        <template #text>
+          <div class="menu-text">
+            <div class="menu-text-up">
+              申请加盟
+            </div>
+            <div class="menu-text-down">
+              商家入驻
+            </div>
+          </div>
+          <div class="menu-icon">
+            <van-icon name="shield-o" />
+          </div>
+          <span class="menu-arrow">
+            <van-icon name="arrow" />
+          </span>
+        </template>
+        <template #icon>
+          <van-icon name="location-o" color="transparent" />
+        </template>
+      </van-grid-item>
+      <van-grid-item to="/setting" style="margin-top: 5%;">
+        <template #text>
+          <div class="menu-text">
+            <div class="menu-text-up">
+              设置
+            </div>
+            <div class="menu-text-down">
+              系统及用户设定
+            </div>
+          </div>
+          <div class="menu-icon">
+            <van-icon name="setting-o" />
+          </div>
+          <span class="menu-arrow">
+            <span class="menu-arrow-info">查看</span>
+            <van-icon name="arrow" />
+          </span>
+        </template>
+        <template #icon>
+          <van-icon name="setting-o" color="transparent" />
+        </template>
+      </van-grid-item>
+
+    </van-grid>
     <!-- 底部导航栏 -->
     <Tabbar />
   </div>
@@ -210,6 +277,50 @@ function onLogout() {
   border-radius: 8px;
   overflow: hidden;
   background: var(--color-bg-2);
+}
+
+.menu-text {
+  font-size: 15px;
+  display: flex;
+  align-items: flex-start;
+  position: absolute;
+  left: 12%;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  font-size: 10px;
+
+  &-up {
+    font-size: 12px;
+  }
+
+  &-down {
+    font-size: 10px;
+    margin-top: 5%;
+    color: grey;
+  }
+}
+
+.menu-icon {
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  left: 5%;
+}
+
+.menu-arrow {
+  font-size: 15px;
+  position: absolute;
+  right: 8%;
+  display: flex;
+  align-items: center;
+
+  &-info {
+    font-size: 12px;
+    margin-right: 5px;
+    color: grey;
+  }
 }
 
 .header {

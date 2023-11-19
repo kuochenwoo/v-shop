@@ -39,6 +39,10 @@ function onBannerClicked(linkUrl: string) {
   }
 }
 
+function getTagsArray(tagsString) {
+  return tagsString.split(",").map(tag => tag.trim());
+}
+
 const listRef = ref<any>(null);
 const list = ref<Recordable[]>([]);
 const pagination = reactive({
@@ -64,6 +68,11 @@ function onItemClick(id: number) {
   router.push({ path: '/good/detail', query: { id } });
 }
 
+function generateRandomNumber() {
+  // 生成一个介于8到15之间的随机整数
+  return Math.floor(Math.random() * 8) + 8;
+}
+
 function onAdClick(id: number) {
   router.push({ path: '/ad/detail', query: { id } });
 }
@@ -85,8 +94,6 @@ function onBookClicked() {
       </van-swipe>
     </div>
     <div class="main">
-      <Plate class="section-header" title="合作商家" />
-
       <van-swipe :autoplay="3000" class="advertise">
         <van-swipe-item v-for="item in adList" :key="item.id" class="advertise-item" @click="onAdClick(item.id)">
           <h1>
@@ -95,35 +102,47 @@ function onBookClicked() {
           <van-image class="advertise-item-img" fit="cover" :src="item.picUrl" :alt="item.title" />
         </van-swipe-item>
       </van-swipe>
-      <Plate class="section-header" title="服务列表" />
       <ProList ref="listRef" v-model:dataSource="list" mode="infinite" :api="getGoodList" :pagination="pagination"
         :meta="listMeta">
         <div class="list">
           <div v-for="item in list" :key="item.id" class="list-col">
-            <div class="list-item" style="display: flex;" @click="onItemClick(item.id)">
-              <div v-if="item.recommendStatus" class="list-item-badge">推荐</div>
-              <van-image class="list-item-photo" :src="item.pic" :alt="item.name" />
-              <div class="list-item-info">
-                <div class="list-item-info-more">
-                  <div class="list-item-title">{{ item.name }}</div>
-                  <div class="list-item-sold">已售：{{ item.numberOrders }}</div>
+            <van-card :price="item.minPrice" :thumb="item.pic" :origin-price="item.originalPrice"
+              @click="onItemClick(item.id)">
+              <template v-if="item.recommendStatus === 1" #tag>
+                <van-tag type="primary" color="red">推荐</van-tag>
+              </template>
+              <template #tags>
+                <div class="card-tag-service">
+                  <van-tag v-for="tag in getTagsArray(item.tags)" :key="tag" plain type="primary"
+                    style="font-size: xx-small;" text-color="darkgoldenrod">
+                    {{ tag }}
+                  </van-tag>
                 </div>
-
-                <div class="list-item-price">
-                  <div class="price">
-                    <div class="price-current">
-                      <span class="price-current-symbol">¥</span>
-                      <span class="price-current-integer">{{ item.minPrice }}</span>
-                    </div>
-                    <div v-if="item.originalPrice > 0" class="price-origin">
-                      <span class="price-origin-symbol">¥</span>
-                      <span class="price-origin-integer">{{ item.originalPrice }}</span>
-                    </div>
+              </template>
+              <template #title>
+                <div class="card-title">
+                  {{ item.name }}
+                </div>
+              </template>
+              <template #footer>
+                <div class="card-other-info">
+                  <div class="list-item-appointment">
+                    <span class="list-item-appointment-bk1">最早可约：</span>
+                    <span class="list-item-appointment-bk2">12:00</span>
                   </div>
-                  <van-button type="primary" plain class="buy-btn" @click.stop="onBookClicked">预约</van-button>
+                  <div class="list-item-distance">最近技师：{{ generateRandomNumber() }}分钟</div>
                 </div>
-              </div>
-            </div>
+              </template>
+              <template #desc>
+                <div class="card-desc">
+                  {{ item.description }}
+                </div>
+              </template>
+              <template #bottom>
+                <van-button size="normal" class="order-button" color="linear-gradient(to right, #ff6034, #ee0a24)"
+                  @click.stop="onBookClicked">预约</van-button>
+              </template>
+            </van-card>
           </div>
         </div>
       </ProList>
@@ -134,6 +153,88 @@ function onBookClicked() {
 </template>
 
 <style lang="less" scoped>
+.order-button {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 35%;
+  width: 35%;
+}
+
+
+.list {
+  &-item {
+    &-distance {
+      margin-top: 3%;
+      font-size: 10px;
+      color: grey;
+      text-align: right;
+    }
+
+    &-appointment {
+      font-size: 10px;
+      font-weight: 500;
+      border-radius: 5px;
+      padding-left: 5px;
+      background-color: #221406;
+      display: flex;
+
+      &-bk1 {
+        border-radius: 5px;
+        color: burlywood;
+        display: flex;
+        align-items: center;
+      }
+
+      &-bk2 {
+        flex: 1;
+        color: #2e1d05;
+        padding-right: 5px;
+        padding-left: 5px;
+        background-color: darksalmon;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+}
+
+.card {
+  &-title {
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  &-other {
+    &-info {
+      position: absolute;
+      right: 5%;
+      top: 10%;
+    }
+  }
+
+  &-desc {
+    color: darkslateblue;
+    font-size: 10px;
+  }
+
+  &-tag {
+    &-service {
+      margin-top: 1%;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      width: 60%;
+      color: gold;
+    }
+  }
+}
+
 .swiper {
   width: 100%;
   height: 180px;
@@ -175,15 +276,15 @@ h1 {
 .list {
   display: flex;
   flex-wrap: wrap;
-  padding-left: 5px;
-  padding-right: 5px;
+  // padding-left: 5px;
+  // padding-right: 5px;
 
   &-col {
     width: 100%;
     box-sizing: border-box;
-    padding-left: 5px;
-    padding-right: 5px;
-    margin-bottom: 10px;
+    // padding-left: 5px;
+    // padding-right: 5px;
+    // margin-bottom: 10px;
   }
 
   &-item {
