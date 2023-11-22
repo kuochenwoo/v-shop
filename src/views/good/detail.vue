@@ -71,7 +71,7 @@ function getGoodsDetail() {
     if (unref(basicInfo).stores === 0) {
       showConfirmDialog({
         title: '提示',
-        message: '该商品已售罄,去看看其他商品吧！',
+        message: '该服务已售罄,去看看其他服务吧！',
         showCancelButton: false,
       })
         .then(() => {

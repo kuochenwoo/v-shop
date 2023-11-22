@@ -6,9 +6,8 @@ export default {
 
 <script setup lang="ts">
 import { computed, onMounted, ref, unref } from 'vue';
-import { showConfirmDialog, showToast, showLoadingToast, closeToast } from 'vant';
+import { showConfirmDialog, showToast } from 'vant';
 import NP from 'number-precision';
-import { useDebounceFn } from '@vueuse/core';
 import API_CART from '@/apis/cart';
 import { decimalFormat } from '@/utils/format';
 import IMAGE_LIST_EMPTY from '@/assets/images/empty/cart.png';
@@ -43,7 +42,7 @@ const cartVideoSrc = ICON_SHOPPING_CART;
 const selectedList = computed(() => {
   return unref(list).filter((v) => v.selected);
 });
-
+let checkBoxStatus = false;
 const totalGoodCount = computed(() => {
   return unref(selectedList).reduce((acc, cur) => NP.plus(acc, cur.number), 0);
 });
@@ -75,11 +74,6 @@ function getList() {
     });
 }
 
-const onGoodChange = useDebounceFn((number, index) => {
-  const { key } = unref(list)[index];
-  cartNumberHandle(index, { key, number });
-}, 1000);
-
 function onDelete() {
   if (!unref(selectedList).length) {
     showToast({
@@ -91,7 +85,7 @@ function onDelete() {
 
   // const type = unref(selectedList).length === unref(list).length ? 'empty' : 'remove';
   // const message = type === 'empty' ? `确定要清空购物车吗？` : `确定要删除这${unref(selectedList).length}个预约吗？`;
-  const message = `确定要删除这${unref(selectedList).length}个预约吗？`;
+  const message = `确定要删除这个预约吗？`;
 
   showConfirmDialog({
     message: message,
@@ -108,22 +102,26 @@ function onDelete() {
     });
 }
 
-function cartNumberHandle(_index: number, { key, number }) {
-  showLoadingToast({
-    forbidClick: true,
-    message: '修改中...',
-    duration: 0,
-  });
-
-  API_CART.shoppingCartModifyNumber({ number, key })
-    .then((res) => {
-      closeToast();
-      list.value = res.data?.items ?? [];
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+function onCLickBoxChange(selected) {
+  checkBoxStatus = selected;
+  console.log(selected)
 }
+// function cartNumberHandle(_index: number, { key, number }) {
+//   showLoadingToast({
+//     forbidClick: true,
+//     message: '修改中...',
+//     duration: 0,
+//   });
+
+//   API_CART.shoppingCartModifyNumber({ number, key })
+//     .then((res) => {
+//       closeToast();
+//       list.value = res.data?.items ?? [];
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// }
 
 // function cartEmptyHandle() {
 //   API_CART.shoppingCartEmpty()
@@ -160,7 +158,7 @@ function onSubmit() {
 
   if (unref(selectedList).some((v) => v.status === 0)) {
     showToast({
-      message: '请删除掉失效商品',
+      message: '请删除掉失效服务',
       duration: 1500,
     });
     return;
@@ -190,7 +188,7 @@ function onSubmit() {
           <div class="list">
             <div v-for="(item, index) in list" :key="item.serviceId" class="list-item">
               <div class="list-item-selected">
-                <van-checkbox v-model="item.selected"></van-checkbox>
+                <van-checkbox v-model="item.selected" @click="onCLickBoxChange(item.selected)"></van-checkbox>
               </div>
               <van-image fit="contain" class="list-item-pic" :src="item.servicePic" />
               <div class="list-item-content">
@@ -207,15 +205,10 @@ function onSubmit() {
                       {{ item.productName }}
                     </div>
                   </div>
-
                   <div class="list-item-price">
                     <span class="list-item-price-symbol">¥</span>
                     <span class="list-item-price-integer">{{ decimalFormat(item.price) }}</span>
                   </div>
-                  <template v-if="item.status === 0">
-                    <van-stepper :model-value="item.number" async-change class="sku-num-stepper"
-                      @change="onGoodChange($event, index)" />
-                  </template>
                 </div>
               </div>
             </div>
@@ -233,6 +226,27 @@ function onSubmit() {
         </template>
       </van-empty>
     </SpainList>
+    <div>
+      <div v-if="checkBoxStatus === true && list.length">
+        <van-cell title="已选服务" :value="`${list[0].serviceName}`" size="large" style="position: relative;width: 100%; "
+          class="van-cell-full" />
+        <van-cell title="服务时间" :value="`${list[0].status}分钟`" size="large" style="position: relative;width: 100%; "
+          class="van-cell-full" />
+        <van-card :thumb="list[0].productPic" class="van-card-full">
+          <template #title>
+            <div style="font-weight: bold; font-size: medium;">
+              {{ list[0].productName }}
+            </div>
+          </template>
+          <template #desc>
+            <div style="font-size: 12px; color: grey; margin-top: 3%;">
+              车程大约：{{ list[0].distance }}分钟
+            </div>
+
+          </template>
+        </van-card>
+      </div>
+    </div>
     <!--结算栏 -->
     <div class="submit-bar-wrap">
       <div v-if="list.length" class="submit-bar">
@@ -260,6 +274,18 @@ function onSubmit() {
 </template>
 
 <style lang="less" scoped>
+.drop-down-img {
+  display: flex;
+}
+
+.van-card-full {
+  --van-card-background: #ac9b9b26;
+}
+
+.van-cell-full {
+  --van-cell-background: #ac9b9b26;
+}
+
 .goods {
   box-sizing: border-box;
   position: relative;

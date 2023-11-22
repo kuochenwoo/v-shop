@@ -26,7 +26,12 @@ onMounted(() => {
   getUserAmount();
   getOrderSetInfo();
 });
-
+const filter = (type, options) => {
+  if (type === 'hour') {
+    return options.filter((option) => !(Number(option.value) < 12 && Number(option.value) >= 4));
+  }
+  return options;
+};
 const router = useRouter();
 const orderStore = useOrderStore();
 
@@ -76,7 +81,13 @@ function getOrderSetInfo() {
     orderSetInfo.value = res.data || {};
   });
 }
+function getCurrentTimeFormat() {
+  if (currentTime.value[0] != "" && currentTime.value[1] != "") {
+    return currentTime.value[0] + ":" + currentTime.value[1];
+  }
 
+  return "";
+}
 const remark = ref('');
 
 const tradeGoods = computed(() => orderStore.getTradeGoods);
@@ -109,7 +120,18 @@ function onSubmit() {
 
   createOrder();
 }
+const show = ref(false);
+const showPopup = () => {
+  show.value = true;
+};
 
+function onTimeSelectConfirm() {
+  show.value = false;
+}
+function onTimeSelectCancel() {
+  currentTime.value = ["", ""];
+  show.value = false;
+}
 /**
  * 创建订单
  */
@@ -125,10 +147,14 @@ async function createOrder() {
   // number: item.number,
   // propertyChildIds: item.propertyList.map((v) => v.propIds).join(','),
   // }));
-
+  if (currentTime.value[0] == "" || currentTime.value[1] == "") {
+    showToast({ message: '请选择上门时间', duration: 1500 });
+    return;
+  }
   const params: Recordable = {
     payType: "BANK", // 支付类型
     clientType: "H5", // 支付客户端
+    serviceTime: currentTime.value[0] + ":" + currentTime.value[1],
     productId: productId,
     serviceIdList: JSON.stringify(serviceIdList),
     realPayAmount: realPayAmount,
@@ -176,7 +202,7 @@ async function createOrder() {
     console.error(error);
   }
 }
-
+const currentTime = ref(["", ""]);
 /**
  * 付款方式 有且仅有一种 钱包支付T.T
  */
@@ -212,6 +238,9 @@ function payOrder(payParam) {
       <van-cell v-else class="address-card mb10" title="新增收货地址" icon="add-square" is-link
         @click="onAddressClicked"></van-cell>
       <van-cell title="服务方式" value="上门服务"></van-cell>
+      <van-cell title="选择上门时间" :value="getCurrentTimeFormat()" is-link @click="showPopup" style="width: 100%;" />
+
+
       <SelectAddress v-model="addressPopupShow" @select="onAddressSelected" />
     </div>
     <!-- 商品列表 -->
@@ -224,14 +253,36 @@ function payOrder(payParam) {
         <GoodCard v-for="(item, index) in goodList" :key="index" :good="item" />
       </div>
       <div class="subtotal">
-        <span class="subtotal-num">共{{ goodList.length }}件</span>
-        <span class="subtotal-label">商品小计：</span>
+        <span class="subtotal-label">订单小计：</span>
         <span class="subtotal-price">
           <span class="subtotal-price-symbol">¥</span>
           <span class="subtotal-price-integer">{{ decimalFormat(totalPrice) }}</span>
         </span>
       </div>
     </div>
+    <van-cell :title="goodList[0].name" size="large">
+      <template #value>
+        <span>
+          {{ goodList[0].price }}元 /
+        </span>
+        <span>
+          <van-icon name="clock-o" />&nbsp;{{ goodList[0].minute }}分钟
+        </span>
+      </template>
+    </van-cell>
+    <van-card tag="金牌技师" :thumb="goodList[0].productPic">
+      <template #title>
+        <div style="font-weight: bold; font-size: medium;">
+          {{ goodList[0].productName }}
+        </div>
+      </template>
+      <template #desc>
+        <div style="font-size: 12px; color: grey; margin-top: 3%;">
+          车程大约：{{ goodList[0].distance }}分钟
+        </div>
+
+      </template>
+    </van-card>
     <!-- 备注 -->
     <div class="section">
       <van-field v-model="remark" label="买家留言" type="textarea" placeholder="留言建议提前协商（50字以内）" maxlength="50" rows="1"
@@ -265,6 +316,10 @@ function payOrder(payParam) {
       </div>
     </div>
   </div>
+  <van-popup v-model:show="show" style="width: 100%;">
+    <van-time-picker :filter="filter" v-model="currentTime" :onConfirm="onTimeSelectConfirm"
+      :onCancel="onTimeSelectCancel" />
+  </van-popup>
 </template>
 
 <style lang="less" scoped>

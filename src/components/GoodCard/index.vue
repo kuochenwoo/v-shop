@@ -45,7 +45,7 @@ export default defineComponent({
           <span class="good-card-price-symbol">¥</span>
           <span class="good-card-price-integer">{{ decimalFormat(good.price) }}</span>
         </div>
-        <div class="good-card-number">x{{ good.number }}</div>
+        <!-- <div class="good-card-number">x{{ good.number }}</div> -->
       </div>
     </div>
   </div>

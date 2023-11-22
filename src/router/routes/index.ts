@@ -203,7 +203,7 @@ const routes = [
     name: 'GoodDetail',
     component: () => import('@/views/good/detail.vue'),
     meta: {
-      title: '商品详情',
+      title: '服务详情',
       showWindowBar: true,
     },
   },

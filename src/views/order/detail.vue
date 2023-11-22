@@ -113,7 +113,7 @@ function onConcatService() {
 function onOrderDelivery(outTradeNo: string) {
   showConfirmDialog({
     title: '提示',
-    message: '确认您已收到商品？',
+    message: '确认您已收到上门服务？',
   })
     .then(() => {
       // on confirm
@@ -271,7 +271,7 @@ watchEffect(() => {
       <div class="section">
         <div class="section-header van-hairline--bottom">
           <van-icon class="section-header-icon" name="shop-o" />
-          <span class="section-header-title">商品列表</span>
+          <span class="section-header-title">已预约服务</span>
         </div>
         <div class="list">
           <div v-for="(item, index) in goods" :key="index" class="list-item" @click="onGoodClicked(item.serviceId)">
@@ -279,8 +279,8 @@ watchEffect(() => {
             <div class="list-item-content">
               <div class="list-item-title">{{ item.serviceName }}-{{ item.productName }}</div>
               <div class="list-item-desc">
-                <div v-if="item.property" class="list-item-prop">
-                  {{ item.property }}
+                <div class="list-item-prop">
+                  服务时间：{{ orderInfo.serviceTime }}
                 </div>
               </div>
               <div class="list-item-bottom">

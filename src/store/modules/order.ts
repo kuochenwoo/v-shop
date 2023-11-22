@@ -34,7 +34,10 @@ export const useOrderStore = defineStore({
             pic: v.servicePic,
             price: v.price,
             productName: v.productName,
-            productId: v.productId
+            productId: v.productId,
+            minute: v.status,
+            productPic: v.productPic,
+            distance: v.distance
           });
         });
       } else {
@@ -108,6 +111,9 @@ export interface ITradeGoodItem {
   price: number;
   productName: string;
   productId: number;
+  minute:number;
+  productPic:string;
+  distance:number;
 }
 export interface ITradeGoods {
   origin: string;

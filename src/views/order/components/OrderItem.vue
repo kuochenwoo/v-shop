@@ -74,7 +74,7 @@ function onOrderDelete(item: Recordable, index: number) {
           <div class="good-card-content-hd">
             <div class="good-card-title">{{ item.orderItemVOList[0].serviceName }} - {{
               item.orderItemVOList[0].productName }}</div>
-            <div v-if="item.goodsInfo.property" class="good-card-prop">{{ item.goodsInfo.property }}</div>
+            <div class="good-card-prop">服务时间：{{ item.serviceTime }}</div>
           </div>
           <!-- <div class="good-card-content-bd">
             <div class="good-card-price">¥{{ decimalFormat(item.totalAmount) }}</div>

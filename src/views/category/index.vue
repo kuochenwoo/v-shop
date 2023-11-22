@@ -25,6 +25,7 @@ onMounted(() => {
   }
   selectedProductId = null;
   selectedServiceId = null;
+  selectedProductDetail = null;
 });
 
 let imgDetailArr = ref<any>(null);
@@ -45,11 +46,9 @@ const router = useRouter();
 const listEmptyImage = IMAGE_LIST_EMPTY;
 const product_list = ref<Recordable[]>([]);
 const product_list_ref = ref<any>(null);
-// const listRef = ref<any>(null);
-// const list = ref<Recordable[]>([]);
-const checked = ref('1');
 let selectedProductId = null;
 let selectedServiceId = null;
+let selectedProductDetail: Recordable<any> | null = null;
 
 const show = ref(false);
 
@@ -72,6 +71,11 @@ function getGoodList() {
   };
   // 参数由form-data传入
   return API_GOODS.goodsList(params);
+}
+
+function getProductDetail() {
+  let selectedObject = list.value.filter(obj => obj.id === selectedProductId);
+  selectedProductDetail = selectedObject[0]
 }
 
 function formatTime(itemTime) {
@@ -124,7 +128,7 @@ const pagination = reactive({
 });
 const listMeta = reactive({
   loadingText: '努力加载中...',
-  emptyText: '暂无商品',
+  emptyText: '暂无数据',
   emptyImage: IMAGE_LIST_EMPTY,
 });
 
@@ -141,10 +145,6 @@ function toggle(value: boolean) {
   show.value = value;
 }
 
-const onServiceClick = (id) => {
-  selectedServiceId = id; // 保存选中项的 id
-};
-
 function onProductClicked(id) {
   // router.push({ path: '/good/detail', query: { id } });
   // getGoodList().then((res) => {
@@ -154,6 +154,7 @@ function onProductClicked(id) {
   // product_list = product_list.value
   toggle(true);
   selectedProductId = id;
+  getProductDetail()
 }
 
 watchEffect(() => {
@@ -163,7 +164,8 @@ watchEffect(() => {
   }
 });
 
-function onTaskSubmit() {
+function onTaskSubmit(id) {
+  selectedServiceId = id;
   if (selectedProductId === null) {
     showToast("请先选择技师");
     return;
@@ -282,33 +284,54 @@ function onTaskSubmit() {
       <Tabbar />
     </div>
     <!-- 弹出层要放在最外面 -->
-    <van-popup v-model:show="show" closeable position="bottom" :style="{ height: '30%' }">
-      <div class="coupons-header van-hairline--bottom">选择服务项目</div>
-      <div class="popup-list">
-        <van-list ref="product_list_ref" v-model:dataSource="product_list" mode="infinite">
-          <van-radio-group v-model="checked">
-            <div v-for="item in product_list" :key="item.id">
-              <van-radio :name="item.id" margin-bottom="10px" margin-top="10px" shape="dot" icon-size="15px"
-                @click="onServiceClick(item.id)">
-                <div class="bbb">
-                  <div class="bbb-l">
-                    {{ item.name }}
-                  </div>
-                  <div class="bbb-m">
-                    {{ item.originalPrice }}
-                  </div>
-                  <div class="bbb-r">
-                    {{ item.minPrice }}
-                  </div>
-                </div>
-              </van-radio>
-            </div>
-            <div class="popup-button-bottom">
-              <van-button type="primary" round block @click="onTaskSubmit">马上预约</van-button>
-            </div>
-          </van-radio-group>
-        </van-list>
+
+    <van-popup v-model:show="show" position="bottom" :style="{ height: '50%' }" round>
+
+      <div class="popup-hd">
+        <div class="popup-hd-title">
+          <div class="popup-hd-title-name">
+            {{ selectedProductDetail?.name }}
+          </div>
+          <div class="popup-hd-title-distance">
+            据您车程：{{ selectedProductDetail?.distance }} 分钟
+          </div>
+
+        </div>
+
       </div>
+
+      <van-list ref="product_list_ref" v-model:dataSource="product_list" mode="infinite">
+        <div v-for="item in product_list" :key="item.id" class="list-col-popup">
+          <van-card :thumb="item.pic">
+            <template #title>
+              <div class="list-col-popup-card-title">
+                {{ item.name }}
+              </div>
+            </template>
+            <template #desc>
+              <div class="list-col-popup-card-desc">
+                {{ item.description }}
+              </div>
+            </template>
+            <template #price>
+              <div class="list-col-popup-card-price">
+                {{ item.minPrice }}
+              </div>
+            </template>
+            <template #bottom>
+              <van-button size="normal" class="order-button" plain color="red" round
+                @click="onTaskSubmit(item.id)">去下单</van-button>
+            </template>
+            <template #tag>
+              <div class="list-col-popup-card-tag">
+                <van-tag type="primary" class="card-tag-two"><van-icon name="clock-o" style="margin-right: 5px;" />{{
+                  item.status }} 分钟</van-tag>
+              </div>
+
+            </template>
+          </van-card>
+        </div>
+      </van-list>
 
     </van-popup>
     <van-popup v-model:show="showImgPopup" :style="{ height: '27%' }">
@@ -353,8 +376,8 @@ function onTaskSubmit() {
   }
 
   &-two {
-    color: #fff;
-    background-color: #ee0a247a;
+    color: white;
+    background-color: rgb(209, 52, 120);
   }
 }
 
@@ -438,22 +461,56 @@ function onTaskSubmit() {
 }
 
 .popup {
-  &-list {
-    background: var(--color-bg-2);
+  &-hd {
+    height: 20%;
+    color: transparent;
 
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-left: 3%;
-    margin-top: 2%;
-
-    &-item {
-      margin-bottom: 10px;
-    }
-
-    &-photo {
+    &-title {
+      color: white;
+      background-color: #855B32;
+      height: 100%;
       display: flex;
+      flex-direction: row;
+      align-content: flex-end;
+      justify-content: space-around;
+      align-items: center;
+      background-image: url('@/assets/images/bg.jpg');
+      background-size: cover;
+      /* 或者使用 contain，根据需求选择 */
+      background-repeat: no-repeat;
+
+      &-name {
+        color: #60373E;
+        font-weight: bold;
+      }
+
+      &-distance {
+        font-size: x-small;
+        color: #60373E;
+      }
     }
+
+    &-list {
+      background: var(--color-bg-2);
+
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-left: 3%;
+      margin-top: 2%;
+
+      &-item {
+        margin-bottom: 10px;
+      }
+
+      &-photo {
+        display: flex;
+      }
+
+
+    }
+
+
   }
 
   &-button {
@@ -490,6 +547,25 @@ function onTaskSubmit() {
     padding-left: 5px;
     padding-right: 5px;
     margin-bottom: 10px;
+
+    &-popup {
+      width: 100%;
+
+      &-card-title {
+        font-weight: bold;
+        font-size: larger;
+      }
+
+      &-card-desc {
+        font-size: small;
+        color: grey;
+      }
+
+      &-card-price {
+        color: red;
+        font-size: medium;
+      }
+    }
   }
 
   &-item {

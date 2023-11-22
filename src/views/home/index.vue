@@ -51,7 +51,7 @@ const pagination = reactive({
 });
 const listMeta = reactive({
   loadingText: '努力加载中...',
-  emptyText: '暂无商品',
+  emptyText: '暂无数据',
   emptyImage: IMAGE_LIST_EMPTY,
 });
 
