@@ -286,7 +286,7 @@ watchEffect(() => {
               <div class="list-item-bottom">
                 <div class="list-item-price text-primary-color">
                   <span class="list-item-price-symbol">¥</span>
-                  <span class="list-item-price-integer">{{ decimalFormat(item.amount) }}</span>
+                  <span class="list-item-price-integer">{{ decimalFormat(orderInfo.payAmount) }}</span>
                 </div>
                 <!-- <div class="list-item-number">x{{ item.number }}</div> -->
               </div>
@@ -317,7 +317,7 @@ watchEffect(() => {
         </div> -->
         <div class="amount amount-total-price">
           <span class="amount-total-price-label">{{ orderInfo.state === 'NEW' ? '需付款：' : '实付款：' }}</span>
-          <Price class="amount-total-price-price" :price="orderInfo.payAmount" />
+          <Price class="amount-total-price-price" :price="orderInfo.totalAmount" />
         </div>
       </div>
       <!-- 订单信息 -->

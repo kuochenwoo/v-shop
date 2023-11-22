@@ -3,7 +3,7 @@ import type { PropType } from 'vue';
 import { useRouter } from 'vue-router';
 import { showToast } from 'vant';
 import Price from '@/components/Price/index.vue';
-// import { decimalFormat } from '@/utils/format';
+import { decimalFormat } from '@/utils/format';
 
 import { useOrderStore } from '@/store/modules/order';
 
@@ -76,9 +76,9 @@ function onOrderDelete(item: Recordable, index: number) {
               item.orderItemVOList[0].productName }}</div>
             <div class="good-card-prop">服务时间：{{ item.serviceTime }}</div>
           </div>
-          <!-- <div class="good-card-content-bd">
-            <div class="good-card-price">¥{{ decimalFormat(item.totalAmount) }}</div>
-          </div> -->
+          <div class="good-card-content-bd">
+            <div class="good-card-price">¥&nbsp;{{ decimalFormat(item.payAmount) }}</div>
+          </div>
         </div>
       </div>
       <!-- <div v-if="item.goodsNumber > 1" class="list-item-more">查看全部{{ item.goodsNumber }}件商品</div> -->
@@ -86,13 +86,13 @@ function onOrderDelete(item: Recordable, index: number) {
         <!-- <span class="list-item-total-number">共{{ item.goodsNumber }}件商品</span> -->
         <div class="list-item-total-price">
           <span class="list-item-total-price-label"> {{ item.state === 'NEW' ? '需付款：' : '实付款：' }}</span>
-          <Price :price="item.payAmount" />
+          <Price :price="item.totalAmount" />
         </div>
       </div>
     </div>
     <!-- ▼ 操作按钮组（一行最好不要超过3个） -->
     <div class="list-item-footer van-hairline--top">
-      <template v-if="item.state === 'CANCEL' || item.state === 'PAY'">
+      <template v-if="item.state != 'NEW'">
         <van-button class="list-item-action-btn" round @click.stop="onOrderDelete(item, index)"> 删除订单 </van-button>
       </template>
       <template v-if="item.state === 'NEW'">

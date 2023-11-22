@@ -64,6 +64,21 @@ export function shoppingCartRemove(data?: Recordable) {
 }
 
 /**
+ * 获得订单运费
+ * @param data 
+ * @returns 
+ */
+export function getDeliveryFee(data?: Recordable) {
+  // const host: string = import.meta.env.VITE_APP_API_HOST_MY;
+  return request({
+    // url: `/shopping-cart/remove`,
+    url: `http://47.99.137.224:7072/api/product/v1/delivery_fee_front`,
+    method: 'post',
+    data,
+  });
+}
+
+/**
  * 购物车修改选中状态
  */
 export function shoppingCartSelect(data?: Recordable) {
@@ -81,4 +96,5 @@ export default {
   shoppingCartModifyNumber,
   shoppingCartRemove,
   shoppingCartSelect,
+  getDeliveryFee
 };

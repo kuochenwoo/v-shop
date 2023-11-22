@@ -29,6 +29,7 @@ const orderStore = useOrderStore();
 const { hasLogin, goHome, goLogin } = usePage();
 
 const editStatus = ref(1); // 编辑, 取消
+const fee = ref();
 function onEditStatusChange() {
   editStatus.value = unref(editStatus) === 1 ? 2 : 1;
 }
@@ -48,7 +49,7 @@ const totalGoodCount = computed(() => {
 });
 
 const totalPrice = computed(() => {
-  return unref(selectedList).reduce((acc, cur) => NP.plus(acc, NP.times(cur.price, cur.number)), 0);
+  return unref(selectedList).reduce((acc, cur) => NP.plus(acc, NP.times(cur.price, cur.number)) + fee.value, 0);
 });
 
 // const selectedAll = computed({
@@ -68,10 +69,20 @@ function getList() {
   API_CART.shoppingCartInfo()
     .then((res) => {
       list.value = res.data?.items ?? [];
+      getFee();
     })
     .finally(() => {
       listLoading.value = false;
     });
+}
+
+async function getFee() {
+  const params: Recordable = {
+    productId: list.value[0].productId,
+    serviceId: list.value[0].serviceId
+  }
+  const res = await API_CART.getDeliveryFee(params);
+  fee.value = res.data;
 }
 
 function onDelete() {
@@ -146,7 +157,7 @@ function cartRemoveHandle() {
       console.log(err);
     });
 }
-
+const balanceSwitch = ref<boolean>(true);
 function onSubmit() {
   if (!unref(selectedList).length) {
     showToast({
@@ -228,6 +239,17 @@ function onSubmit() {
     </SpainList>
     <div>
       <div v-if="checkBoxStatus === true && list.length">
+        <van-cell title="车费" center>
+          <template #label>
+            <span style="color: red;">
+              出租车打表计费：
+            </span>
+            {{ decimalFormat(fee) }}
+          </template>
+          <template #right-icon>
+            <van-checkbox :model-value="balanceSwitch"> </van-checkbox>
+          </template>
+        </van-cell>
         <van-cell title="已选服务" :value="`${list[0].serviceName}`" size="large" style="position: relative;width: 100%; "
           class="van-cell-full" />
         <van-cell title="服务时间" :value="`${list[0].status}分钟`" size="large" style="position: relative;width: 100%; "

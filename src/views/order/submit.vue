@@ -11,6 +11,7 @@ import { showConfirmDialog, showToast, showLoadingToast, closeToast } from 'vant
 import NP from 'number-precision';
 import API_USER from '@/apis/user';
 import API_ORDER from '@/apis/order';
+import API_CART from '@/apis/cart';
 // import API_CART from '@/apis/cart';
 import { decimalFormat, mobileShow } from '@/utils/format';
 import SelectAddress from './components/SelectAddress.vue';
@@ -79,6 +80,7 @@ function getOrderSetInfo() {
   const productId = orderStore.getTradeGoods.list[0].productId;
   API_ORDER.orderSet({ productId, serviceId }).then((res) => {
     orderSetInfo.value = res.data || {};
+    getFee();
   });
 }
 function getCurrentTimeFormat() {
@@ -87,6 +89,16 @@ function getCurrentTimeFormat() {
   }
 
   return "";
+}
+
+const fee = ref();
+async function getFee() {
+  const params: Recordable = {
+    productId: orderStore.getTradeGoods.list[0].productId,
+    serviceId: orderStore.getTradeGoods.list[0].goodsId,
+  }
+  const res = await API_CART.getDeliveryFee(params);
+  fee.value = res.data;
 }
 const remark = ref('');
 
@@ -157,7 +169,7 @@ async function createOrder() {
     serviceTime: currentTime.value[0] + ":" + currentTime.value[1],
     productId: productId,
     serviceIdList: JSON.stringify(serviceIdList),
-    realPayAmount: realPayAmount,
+    realPayAmount: realPayAmount + fee.value,
     // goodsJsonStr: JSON.stringify(goods), // 购买的商品信息的数组
     addressId: addressInfo.value.id,
     orderToken: orderToken, // 订单token
@@ -252,11 +264,19 @@ function payOrder(payParam) {
       <div class="list">
         <GoodCard v-for="(item, index) in goodList" :key="index" :good="item" />
       </div>
+      <van-cell title="车费" center>
+        <template #label>
+          <span style="color: red;">
+            出租车打表计费：
+          </span>
+          {{ decimalFormat(fee) }}
+        </template>
+      </van-cell>
       <div class="subtotal">
         <span class="subtotal-label">订单小计：</span>
         <span class="subtotal-price">
           <span class="subtotal-price-symbol">¥</span>
-          <span class="subtotal-price-integer">{{ decimalFormat(totalPrice) }}</span>
+          <span class="subtotal-price-integer">{{ decimalFormat(totalPrice + fee) }}</span>
         </span>
       </div>
     </div>
@@ -307,7 +327,7 @@ function payOrder(payParam) {
           <span class="submit-bar-total">应付：</span>
           <div class="submit-bar-price">
             <span class="submit-bar-price-symbol">¥</span>
-            <span class="submit-bar-price-integer">{{ decimalFormat(totalPrice) }}</span>
+            <span class="submit-bar-price-integer">{{ decimalFormat(totalPrice + fee) }}</span>
           </div>
         </div>
         <van-button class="submit-bar-button" :loading="submitLoading" round type="primary" @click="onSubmit">
