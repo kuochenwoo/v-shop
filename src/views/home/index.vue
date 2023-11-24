@@ -114,7 +114,7 @@ function onBookClicked() {
               <template #tags>
                 <div class="card-tag-service">
                   <van-tag v-for="tag in getTagsArray(item.tags)" :key="tag" plain type="primary"
-                    style="font-size: xx-small;" text-color="darkgoldenrod">
+                    style="font-size: xx-small; margin-right: 3%; margin-bottom: 2%;" text-color="darkgoldenrod">
                     {{ tag }}
                   </van-tag>
                 </div>
@@ -139,7 +139,7 @@ function onBookClicked() {
                 </div>
               </template>
               <template #bottom>
-                <van-button size="normal" class="order-button" color="linear-gradient(to right, #ff6034, #ee0a24)"
+                <van-button size="normal" class="order-button" color="linear-gradient(to right, #FFC73AFA, #ED5B00EE)"
                   @click.stop="onBookClicked">预约</van-button>
               </template>
             </van-card>
@@ -205,7 +205,7 @@ function onBookClicked() {
 
 .card {
   &-title {
-    font-weight: bold;
+    font-weight: 600;
     font-size: 14px;
   }
 
@@ -237,7 +237,7 @@ function onBookClicked() {
 
 .swiper {
   width: 100%;
-  height: 180px;
+  height: 190px;
   margin-bottom: 10px;
 
   &-item,

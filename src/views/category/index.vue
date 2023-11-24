@@ -207,14 +207,14 @@ function onTaskSubmit(id) {
         </van-swipe>
       </div>
       <div class="main">
-        <Plate class="section-header" title="技师列表" />
+        <!-- <Plate class="section-header" title="技师列表" /> -->
         <ProList ref="listRef" v-model:dataSource="list" mode="infinite" :api="getProductList" :pagination="pagination"
           :meta="listMeta">
           <div class="list">
             <div v-for="item in list" :key="item.id" class="list-col">
               <van-card :desc="item.detail">
                 <template #price>
-                  <span class="card-review" style="margin-left: -7%;">
+                  <span class="card-review" style="margin-left: -7%; margin-bottom: 5%;">
                     好评
                     <span class="card-review-score">
                       {{ item.score }}
@@ -264,11 +264,11 @@ function onTaskSubmit(id) {
                 </template>
                 <template #bottom>
                   <div>
-                    <van-button color="linear-gradient(to right, #FF653A, #ED001C)" class="card-order-button"
+                    <van-button color="linear-gradient(to right, #FFC73AFA, #ED5B00EE)" class="card-order-button"
                       @click="onProductClicked(item.id)" span v-if="item.available === 1" round>
-                      <span style="font-size: 12px;">立即预约</span>
+                      <span style="font-size: 12px; ">立即预约</span>
                     </van-button>
-                    <van-button color="linear-gradient(to right, #FF653A, #ED001C)" class="card-order-button"
+                    <van-button color="linear-gradient(to right,#FFC73AFA, #ED5B00E)" class="card-order-button"
                       @click="onProductClicked(item.id)" span v-if="item.available === 0" disabled round>
                       <span style="font-size: 12px;">请稍候</span>
                     </van-button>
@@ -402,6 +402,7 @@ function onTaskSubmit(id) {
   bottom: 0;
   height: 35%;
   width: 40%;
+  margin-bottom: 2%;
 }
 
 .order-button {
@@ -525,7 +526,7 @@ function onTaskSubmit(id) {
 
 .swiper {
   width: 100%;
-  height: 180px;
+  height: 190px;
   margin-bottom: 10px;
 
   &-item,
