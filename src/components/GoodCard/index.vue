@@ -96,16 +96,16 @@ export default defineComponent({
       font-weight: bold;
     }
 
-    // &-title {
-    //   font-size: 14px;
-    //   line-height: 16px;
-    //   color: var(--color-text-1);
-    //   display: -webkit-box;
-    //   overflow: hidden;
-    //   text-overflow: ellipsis;
-    //   -webkit-line-clamp: 2;
-    //   -webkit-box-orient: vertical;
-    // }
+    &-title {
+      font-size: 15px;
+      line-height: 16px;
+      color: var(--color-text-1);
+      display: -webkit-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
 
     &-desc {
       flex: 1;

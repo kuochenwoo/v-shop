@@ -21,8 +21,8 @@ export const theme: ITheme = {
   colors: {
     black: '#000',
     white: '#fff',
-    primary: '#1ba784',
-    vice: '#d9f6ef',
+    primary: '#c3a769',
+    vice: '#ebecf2',
 
     red: '#ee0a24',
     blue: '#1989fa',

@@ -254,17 +254,19 @@ function onSubmit() {
           class="van-cell-full" />
         <van-cell title="服务时间" :value="`${list[0].status}分钟`" size="large" style="position: relative;width: 100%; "
           class="van-cell-full" />
-        <van-card :thumb="list[0].productPic" class="van-card-full">
+        <van-card class="van-card-full">
           <template #title>
-            <div style="font-weight: bold; font-size: medium;">
+            <div style="font-size: large;">
               {{ list[0].productName }}
             </div>
+          </template>
+          <template #thumb>
+            <van-image width="100%" height="100%" fit="cover" :src="list[0].productPic" round />
           </template>
           <template #desc>
             <div style="font-size: 12px; color: grey; margin-top: 3%;">
               车程大约：{{ list[0].distance }}分钟
             </div>
-
           </template>
         </van-card>
       </div>
@@ -395,7 +397,7 @@ function onSubmit() {
 
       &-detail {
         &-service {
-          font-size: 12px;
+          font-size: 15px;
         }
 
         &-product {

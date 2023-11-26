@@ -67,6 +67,7 @@ function getAddressInfo() {
 
 // 钱包
 const balance = ref<number>(0);
+const fee = ref<number>(0);
 const balanceSwitch = ref<boolean>(true);
 function getUserAmount() {
   API_USER.userAmount().then((res) => {
@@ -91,7 +92,6 @@ function getCurrentTimeFormat() {
   return "";
 }
 
-const fee = ref();
 async function getFee() {
   const params: Recordable = {
     productId: orderStore.getTradeGoods.list[0].productId,
@@ -290,17 +290,19 @@ function payOrder(payParam) {
         </span>
       </template>
     </van-cell>
-    <van-card tag="金牌技师" :thumb="goodList[0].productPic">
+    <van-card tag="金牌技师">
       <template #title>
-        <div style="font-weight: bold; font-size: medium;">
+        <div style="font-size: large;">
           {{ goodList[0].productName }}
         </div>
+      </template>
+      <template #thumb>
+        <van-image width="100%" height="100%" fit="cover" :src="goodList[0].productPic" round />
       </template>
       <template #desc>
         <div style="font-size: 12px; color: grey; margin-top: 3%;">
           车程大约：{{ goodList[0].distance }}分钟
         </div>
-
       </template>
     </van-card>
     <!-- 备注 -->

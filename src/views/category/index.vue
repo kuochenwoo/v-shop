@@ -268,7 +268,7 @@ function onTaskSubmit(id) {
                       @click="onProductClicked(item.id)" span v-if="item.available === 1" round>
                       <span style="font-size: 12px; ">立即预约</span>
                     </van-button>
-                    <van-button color="linear-gradient(to right,#FFC73AFA, #ED5B00E)" class="card-order-button"
+                    <van-button color="linear-gradient(to right,#FFC73AFA, #ED5B00EE)" class="card-order-button"
                       @click="onProductClicked(item.id)" span v-if="item.available === 0" disabled round>
                       <span style="font-size: 12px;">请稍候</span>
                     </van-button>
@@ -286,18 +286,19 @@ function onTaskSubmit(id) {
     <!-- 弹出层要放在最外面 -->
 
     <van-popup v-model:show="show" position="bottom" :style="{ height: '50%' }" round>
-
       <div class="popup-hd">
+
         <div class="popup-hd-title">
+
           <div class="popup-hd-title-name">
             {{ selectedProductDetail?.name }}
           </div>
+          <van-image width="3.8rem" height="3.8rem" fit="cover" :src="selectedProductDetail?.coverImg"
+            class="popup-hd-avatar" round />
           <div class="popup-hd-title-distance">
             据您车程：{{ selectedProductDetail?.distance }} 分钟
           </div>
-
         </div>
-
       </div>
 
       <van-list ref="product_list_ref" v-model:dataSource="product_list" mode="infinite">
@@ -466,9 +467,11 @@ function onTaskSubmit(id) {
     height: 20%;
     color: transparent;
 
+    &-avatar {
+      z-index: 2022;
+    }
+
     &-title {
-      color: white;
-      background-color: #855B32;
       height: 100%;
       display: flex;
       flex-direction: row;
